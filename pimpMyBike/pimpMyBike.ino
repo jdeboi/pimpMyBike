@@ -55,8 +55,8 @@ void loop() {
   setTurning();
   checkBraking();
   checkReed();
-  speedometer();
-  odometer();
+  getSpeed();
+  getDistance();
   printLCD();
 }
 
@@ -141,6 +141,7 @@ void checkReed(){
   int r = digitalRead(reedPin);
   if(r == 1 && reedOn == false){
     reedOn = true;
+    reedTimeDelta = millis() - reedTime;
     reedTime = millis();
     circleNum++;
   }
@@ -149,20 +150,16 @@ void checkReed(){
   }
 }
 
-void speedometer(){
-  speedometer = (millis() - reedTime)/wheelC;
-  int m = (int) speedometer * 2236.9; 
-  int m = (int) speedometer * 3600; 
-  MPH = m/100.0;
-  KPH = k/100.0;
+void getSpeed(){
+  speedometer = wheelC/reedTimeDelta;
+  MPH = speedometer * 22.369; 
+  KPH = speedometer * 36; 
 }
 
-void odometer(){
+void getDistance(){
   odometer = wheelC*circleNum;
-  int m = (int) odometer / 1609.344;
-  int k = (int) odometer / 1000;
-  miles = m / 100.0; 
-  kilometers = k / 100.0;
+  miles = odometer / 160934.4;
+  kilometers = odometer / 100000;
 }
 
 void printLCD(){

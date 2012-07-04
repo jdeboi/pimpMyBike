@@ -31,6 +31,8 @@ void checkReed(){
     reedTimeDelta = millis() - reedTime;
     reedTime = millis();
     circleNum++;
+   
+   //prints all metrics when magnet passes switch
     printAll();
   }
   else if (r < 10 && reedOn){
@@ -51,7 +53,6 @@ void getDistance(){
 }
 
 void printAll(){
-  Serial.println(reedTime);
   Serial.print("Circles: ");
   Serial.println(circleNum);
   Serial.print("MPH: ");
