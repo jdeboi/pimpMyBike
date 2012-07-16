@@ -1,11 +1,18 @@
 // include the library code:
 #include <LiquidCrystal.h>
+#include "HT1632.h"
+#define DATA 2
+#define WR   3
+#define CS   4
+#define UP   0
+#define DOWN 1
+#define RIGHT 2
+#define LEFT  3
+#define FLASH 4
 
-///////Turning Indicator////////
+///////Turning Indicator Buttons////////
 int turnRpin = 0;  //digital input; tell if right turning indicator button was pushed
 int turnLpin = 1;  //digital input; tell if leftt turning indicator button was pushed 
-int transRpin = 2; //output; power transistor to turn on right turning indicator
-int transLpin = 3; //output; power transistor to turn on left turning indicator
 int rBlinkNum = 0;
 int lBlinkNum = 0;
 boolean rOn = false;
@@ -13,6 +20,17 @@ boolean lOn = false;
 int blinkTime = 1000;
 int rTime = 0;
 int lTime = 0;
+int right;
+int left;
+int rightOld;
+int leftOld;
+int state;
+
+///////Turning Indicator Matrix///////////
+// use this line for single matrix
+//HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
+// use this line for two matrices!
+HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS, CS2);
 
 ///////Accelerometer////////////
 //The minimum and maximum values that came from
@@ -47,6 +65,10 @@ void setup() {
   lcd.begin(16, 2); // set up the LCD's number of columns and rows:
   reedTime = millis();
   pinMode();
+  matrix.begin(HT1632_COMMON_16NMOS);  
+  matrix.fillScreen();
+  delay(500);
+  matrix.clearScreen();
 }
 
 
@@ -61,34 +83,20 @@ void loop() {
 }
 
 void checkTurning(){
-  int right = digitalRead(turnRpin);
-  int left = digitalRead(turnLpin);
-  
-  if (right == HIGH){    
-    if(rOn == false){
-      rOn = true;
-      digitalWrite(transRpin, HIGH);
+  right = digitalRead(turnRpin);
+  left = digitalRead(turnLpin);
+  if(right == HIGH && rightOld == LOW){
       rTime = millis();
       rBlinkNum = 0;
-    }
-    else if(rOn && (millis()- rTime) > 300){
-      rOn = false;
-      digitalWrite(transRpin, LOW);
-    }
-  }
- 
-  if (left == HIGH){   
-    if(lOn == false){
-      lOn = true;
-      digitalWrite(transLpin, HIGH);
-      lTime = millis();
-      lBlinkNum = 0;
-    }
-    else if(lOn && (millis() - lTime) > 300){
-      lOn = false;
-      digitalWrite(transLpin, LOW);
-    }
-  }   
+      rOn =! rOn;
+   }
+   if(left == HIGH && leftOld == LOW){
+     lTime = millis();
+     lBlinkNum = 0;
+     lOn =! lOn;
+   } 
+   rightOld = right; 
+   leftOld = left;
 }
 
 void setTurning(){
@@ -96,26 +104,25 @@ void setTurning(){
     if(changeState(rTime)){
       rTime = millis();
       rBlinkNum++;
-      int state = rBlinkNum%2;
-      digitalWrite(transRpin, state);
     }
+    state = rBlinkNum%2;
+    arrow(RIGHT, state);
   }
   else if(lOn && rOn == false){
     if(changeState(lTime)){
       lTime = millis();
       lBlinkNum++;
-      int state = lBlinkNum%2;
-      digitalWrite(transLpin, state);
     }
+    state = lBlinkNum%2;
+    arrow(LEFT, state);
   }
   else if(lOn && rOn){
     if(changeState(rTime)){
         rTime = millis();
         rBlinkNum++;
-        int state = rBlinkNum%2;
-        digitalWrite(transRpin, state);
-        digitalWrite(transLpin, state);
-      }
+    }
+    state = rBlinkNum%2;
+    arrow(FLASH, state);
   }
 }
 
@@ -169,6 +176,19 @@ void printLCD(){
   lcd.print("MPH: " + miles);
 }
 
+void arrow(int s, int t){
+  if(t == 1){
+    matrix.clearScreen();
+  }
+  else if(s == 1){
+     matrix.drawLine(0, 0, (matrix.width()-1)/2, matrix.height()-1, 1);
+     matrix.drawLine((matrix.width()-1)/2, 0, 0, matrix.height()-1, 1);
+     matrix.writeScreen();
+  }
+  else if(s == 1){}
+  else if(s == 3){}
+}
+  
 
 
 

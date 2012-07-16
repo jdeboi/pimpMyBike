@@ -1,4 +1,3 @@
-
 int numMatrices = 2;
 boolean [][] LEDpixels;
 int wLEDs = 24 * numMatrices;
@@ -9,6 +8,12 @@ int space = circleD + 2 * padding;
 int w = wLEDs*space;
 int h = hLEDs*space;
 boolean label;
+int l0x;
+int l0y;
+int l1x;
+int l1y;
+boolean lineOn;
+boolean lclick1;
 
 void setup(){
   size(w, h);
@@ -44,13 +49,74 @@ void draw(){
 }
 
 void mousePressed() {
-   int x = mouseX/space;
-   int y = mouseY/space;
-   LEDpixels[x][y] = !LEDpixels[x][y];
+  int x = mouseX/space;
+  int y = mouseY/space;
+  if(lineOn){
+    if(lclick1){
+      l0x = x;
+      l0y = y;
+      lclick1 = false;
+    }
+    else{
+      l1x = x;
+      l1y = y;
+      lineOn = false;
+      lclick1 = true;
+      drawLine(l0x, l0y, l1x, l1y);
+    }
+  }
+  else{
+    LEDpixels[x][y] = !LEDpixels[x][y];
+  }
 }
 
 void keyPressed(){
   if(key == 'o'){
     label = !label;
   }
+  if(key == 'l'){
+    lineOn = true;
+  }
 }
+
+void drawLine(int x0, int y0, int x1, int y1){
+ boolean steep = abs(y1 - y0) > abs(x1 - x0);
+  if (steep) {
+    swap(x0, y0);
+    swap(x1, y1);
+  }
+
+  if (x0 > x1) {
+    swap(x0, x1);
+    swap(y0, y1);
+  }
+
+  int dx, dy;
+  dx = x1 - x0;
+  dy = abs(y1 - y0);
+
+  int err = dx / 2;
+  int ystep;
+
+  if (y0 < y1) {
+    ystep = 1;
+  } else {
+    ystep = -1;}
+
+  for (; x0<=x1; x0++) {
+    if (steep) {
+      LEDpixels[y0][x0] = 1;
+    } else {
+      LEDpixels[x0][y0] = 1;
+    }
+    err -= dy;
+    if (err < 0) {
+      y0 += ystep;
+      err += dx;
+    }
+  }
+}
+ 
+ 
+ 
+
