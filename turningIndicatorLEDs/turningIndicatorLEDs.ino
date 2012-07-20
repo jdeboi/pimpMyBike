@@ -18,21 +18,13 @@ void setup() {
   matrix.begin(HT1632_COMMON_16NMOS);  
   matrix.fillScreen();
   delay(500);
-  matrix.clearScreen(); 
+  matrix.clearScreen();
+  arrow(); 
   //t.every(blinkTime, arrow);
 }
 
 void loop() {
-  //arrow(1, 1);
-  //delay(700);
-  //arrow(1, 0);
-  //delay(700);
-  //t.update();
-  scroll(2);
-  //arrow(3, 1);
-  //delay(700);
-  //arrow(3, 0);
-  //delay(700);
+  matrix.translate(
 }
 
  void scroll(int s){
@@ -48,23 +40,15 @@ void loop() {
     int x2
     int y2
     */
-     matrix.drawLine(0, 0, ((matrix.width())/3)-1, (matrix.height()/2)-1, 1);
-     matrix.drawLine((matrix.width()/3)-1, (matrix.height())/2, 0, matrix.height()-1, 1);
      
-     matrix.drawLine((matrix.width()/3), 0, (2*matrix.width()/3)-1, (matrix.height()/2)-1, 1);
-     matrix.drawLine((2*matrix.width()/3)-1, (matrix.height())/2,matrix.width()/3, matrix.height()-1, 1);
      
-     matrix.drawLine((2*matrix.width()/3), 0, matrix.width()-1, (matrix.height()/2)-1, 1);
-     matrix.drawLine(matrix.width()-1, matrix.height()/2, 2*matrix.width()/3, matrix.height()-1, 1);
      
-     matrix.writeScreen();
     
-    
-    for(int i=0; i<20; i++){
-      matrix.translate(1);
+      matrix.translate(3);
+      Serial.println(matrix.getLEDValue(0, 8));
       matrix.writeScreen();
-      delay(100);
-    }
+      delay(2000);
+    
  }
   
   else if(s == 4){
@@ -73,4 +57,18 @@ void loop() {
      matrix.writeScreen();
   }
   else if(s == 3){}
+}
+
+void arrow(int d);
+  if(d = 1){
+    matrix.drawLine(0, 0, ((matrix.width())/3)-1, (matrix.height()/2)-1, 1);
+    matrix.drawLine((matrix.width()/3)-1, (matrix.height())/2, 0, matrix.height()-1, 1);
+     
+    matrix.drawLine((matrix.width()/3), 0, (2*matrix.width()/3)-1, (matrix.height()/2)-1, 1);
+    matrix.drawLine((2*matrix.width()/3)-1, (matrix.height())/2,matrix.width()/3, matrix.height()-1, 1);
+     
+    matrix.drawLine((2*matrix.width()/3), 0, matrix.width()-1, (matrix.height()/2)-1, 1);
+    matrix.drawLine(matrix.width()-1, matrix.height()/2, 2*matrix.width()/3, matrix.height()-1, 1);
+    matrix.writeScreen();
+  }
 }

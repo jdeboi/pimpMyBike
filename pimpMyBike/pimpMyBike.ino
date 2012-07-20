@@ -4,11 +4,12 @@
 #define DATA 2
 #define WR   3
 #define CS   4
-#define UP   0
-#define DOWN 1
-#define RIGHT 2
-#define LEFT  3
 #define FLASH 4
+
+#define RIGHT 1
+#define LEFT 2
+#define UP 3
+#define DOWN 4
 
 ///////Turning Indicator Buttons////////
 int turnRpin = 0;  //digital input; tell if right turning indicator button was pushed
@@ -25,6 +26,11 @@ int left;
 int rightOld;
 int leftOld;
 int state;
+
+
+Timer t;
+int scrollTime = 130;
+
 
 ///////Turning Indicator Matrix///////////
 // use this line for single matrix
@@ -69,6 +75,9 @@ void setup() {
   matrix.fillScreen();
   delay(500);
   matrix.clearScreen();
+  arrow(LEFT); 
+  t.every(scrollTime, scroll);
+  
 }
 
 
@@ -80,14 +89,43 @@ void loop() {
   getSpeed();
   getDistance();
   printLCD();
+  t.update();
+}
+
+void arrow(int d){
+  //right arrow
+  if(d == 1){
+    matrix.drawLine(0, 0, ((matrix.width())/3)-1, (matrix.height()/2)-1, 1);
+    matrix.drawLine((matrix.width()/3)-1, (matrix.height())/2, 0, matrix.height()-1, 1);
+     
+    matrix.drawLine((matrix.width()/3), 0, (2*matrix.width()/3)-1, (matrix.height()/2)-1, 1);
+    matrix.drawLine((2*matrix.width()/3)-1, (matrix.height())/2,matrix.width()/3, matrix.height()-1, 1);
+     
+    matrix.drawLine((2*matrix.width()/3), 0, matrix.width()-1, (matrix.height()/2)-1, 1);
+    matrix.drawLine(matrix.width()-1, matrix.height()/2, 2*matrix.width()/3, matrix.height()-1, 1);
+    matrix.writeScreen();
+  }
+  //left arrow
+  else if(d == 2){
+     matrix.drawLine(matrix.width()-1, 0, 2*matrix.width()/3, matrix.height()/2-1, 1);
+     matrix.drawLine(2*matrix.width()/3, matrix.height()/2, matrix.width()-1, matrix.height()-1, 1);
+     matrix.drawLine(2*matrix.width()/3-1, 0, matrix.width()/3, matrix.height()/2-1, 1);
+     matrix.drawLine(matrix.width()/3, matrix.height()/2, 2*matrix.width()/3-1, matrix.height()-1, 1);
+     matrix.drawLine(matrix.width()/3-1, 0, 0, matrix.height()/2-1, 1);
+     matrix.drawLine(0, matrix.height()/2, matrix.width()/3-1, matrix.height()-1, 1);
+     matrix.writeScreen();
+  }
+}
+
+void scroll(){
+  matrix.translate(LEFT, 2);
+  matrix.writeScreen();
 }
 
 void checkTurning(){
   right = digitalRead(turnRpin);
   left = digitalRead(turnLpin);
   if(right == HIGH && rightOld == LOW){
-      rTime = millis();
-      rBlinkNum = 0;
       rOn =! rOn;
    }
    if(left == HIGH && leftOld == LOW){
