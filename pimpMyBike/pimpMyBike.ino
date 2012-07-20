@@ -28,7 +28,8 @@ int leftOld;
 int state;
 
 
-Timer t;
+Timer scrollTimer;
+Timer turnTimer;
 int scrollTime = 130;
 
 
@@ -76,8 +77,8 @@ void setup() {
   delay(500);
   matrix.clearScreen();
   arrow(LEFT); 
-  t.every(scrollTime, scroll);
-  
+  scrollTimer.every(scrollTime, scroll);
+  //turnTimer.every(scrollTime, scroll);
 }
 
 
@@ -89,7 +90,7 @@ void loop() {
   getSpeed();
   getDistance();
   printLCD();
-  t.update();
+  scrollTimer.update();
 }
 
 void arrow(int d){
@@ -118,8 +119,14 @@ void arrow(int d){
 }
 
 void scroll(){
-  matrix.translate(LEFT, 2);
-  matrix.writeScreen();
+  if(rOn && lOn == false){
+    matrix.translate(RIGHT, 2);
+    matrix.writeScreen();
+  }
+  else if(lOn && rOn == false){
+    matrix.translate(LEFT, 2);
+    matrix.writeScreen();
+  }
 }
 
 void checkTurning(){
@@ -128,57 +135,15 @@ void checkTurning(){
   if(right == HIGH && rightOld == LOW){
       rOn =! rOn;
    }
+   
+   //debating else if; the probability of both HIGH seems low
    if(left == HIGH && leftOld == LOW){
-     lTime = millis();
-     lBlinkNum = 0;
      lOn =! lOn;
    } 
    rightOld = right; 
    leftOld = left;
 }
 
-void setTurning(){
-  if(rOn && lOn == false){
-    
-    }
-    state = rBlinkNum%2;
-    arrow(RIGHT, state);
-  }
-  else if(lOn && rOn == false){
-    if(changeState(lTime)){
-      lTime = millis();
-      lBlinkNum++;
-    }
-    state = lBlinkNum%2;
-    arrow(LEFT, state);
-  }
-  else if(lOn && rOn){
-    if(changeState(rTime)){
-        rTime = millis();
-        rBlinkNum++;
-    }
-    state = rBlinkNum%2;
-    arrow(FLASH, state);
-  }
-}
-
-
-boolean changeState(int time){
-  int n = (millis() - time)/blinkTime;
-  if(n > 1){
-    return true;
-  }
-  else{
-    return false;
-  }   
-}
-
-void checkBraking(){
-  //read the analog values from the accelerometer
-  int xRead = analogRead(xPin);
-  int yRead = analogRead(yPin);
-  int zRead = analogRead(zPin);
-}
 
 void checkReed(){
   int r = digitalRead(reedPin);
