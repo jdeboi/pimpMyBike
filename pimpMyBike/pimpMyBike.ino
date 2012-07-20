@@ -137,6 +137,9 @@ void checkTurning(){
    }
    
    //debating else if; the probability of both HIGH seems low
+   
+   //this could be a stupid question; i should find out 
+   //the time required to parse each line
    if(left == HIGH && leftOld == LOW){
      lOn =! lOn;
    } 
