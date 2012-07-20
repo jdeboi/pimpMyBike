@@ -101,9 +101,7 @@ void checkTurning(){
 
 void setTurning(){
   if(rOn && lOn == false){
-    if(changeState(rTime)){
-      rTime = millis();
-      rBlinkNum++;
+    
     }
     state = rBlinkNum%2;
     arrow(RIGHT, state);
