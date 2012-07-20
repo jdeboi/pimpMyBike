@@ -4,12 +4,14 @@
 #define DATA 2
 #define WR   3
 #define CS   4
-#define FLASH 4
+
 
 #define RIGHT 1
 #define LEFT 2
 #define UP 3
 #define DOWN 4
+#define FLASH 3
+#define BRAKING 3
 
 ///////Turning Indicator Buttons////////
 int turnRpin = 0;  //digital input; tell if right turning indicator button was pushed
@@ -26,12 +28,14 @@ int left;
 int rightOld;
 int leftOld;
 int state;
+int stepSize = 2;
+int type;
 
 
 Timer scrollTimer;
-Timer turnTimer;
 int scrollTime = 130;
-
+Timer flashTimer;
+int flashTime;
 
 ///////Turning Indicator Matrix///////////
 // use this line for single matrix
@@ -68,6 +72,9 @@ float KPH = 0;
 int reedTime = 0;
 boolean reedOn = false;
 
+////////////////////////////////////////////////////////
+////////////////////////////SETUP////////////////////////////
+////////////////////////////////////////////////////////
 void setup() {
   lcd.begin(16, 2); // set up the LCD's number of columns and rows:
   reedTime = millis();
@@ -76,15 +83,16 @@ void setup() {
   matrix.fillScreen();
   delay(500);
   matrix.clearScreen();
-  arrow(LEFT); 
+  matrix.clearLEDs();
   scrollTimer.every(scrollTime, scroll);
-  //turnTimer.every(scrollTime, scroll);
+  flashTimer.every(flashTime, flash);
 }
 
-
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////LOOP////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 void loop() {
   checkTurning();
-  setTurning();
   checkBraking();
   checkReed();
   getSpeed();
@@ -93,58 +101,34 @@ void loop() {
   scrollTimer.update();
 }
 
-void arrow(int d){
-  //right arrow
-  if(d == 1){
-    matrix.drawLine(0, 0, ((matrix.width())/3)-1, (matrix.height()/2)-1, 1);
-    matrix.drawLine((matrix.width()/3)-1, (matrix.height())/2, 0, matrix.height()-1, 1);
-     
-    matrix.drawLine((matrix.width()/3), 0, (2*matrix.width()/3)-1, (matrix.height()/2)-1, 1);
-    matrix.drawLine((2*matrix.width()/3)-1, (matrix.height())/2,matrix.width()/3, matrix.height()-1, 1);
-     
-    matrix.drawLine((2*matrix.width()/3), 0, matrix.width()-1, (matrix.height()/2)-1, 1);
-    matrix.drawLine(matrix.width()-1, matrix.height()/2, 2*matrix.width()/3, matrix.height()-1, 1);
-    matrix.writeScreen();
-  }
-  //left arrow
-  else if(d == 2){
-     matrix.drawLine(matrix.width()-1, 0, 2*matrix.width()/3, matrix.height()/2-1, 1);
-     matrix.drawLine(2*matrix.width()/3, matrix.height()/2, matrix.width()-1, matrix.height()-1, 1);
-     matrix.drawLine(2*matrix.width()/3-1, 0, matrix.width()/3, matrix.height()/2-1, 1);
-     matrix.drawLine(matrix.width()/3, matrix.height()/2, 2*matrix.width()/3-1, matrix.height()-1, 1);
-     matrix.drawLine(matrix.width()/3-1, 0, 0, matrix.height()/2-1, 1);
-     matrix.drawLine(0, matrix.height()/2, matrix.width()/3-1, matrix.height()-1, 1);
-     matrix.writeScreen();
-  }
-}
-
-void scroll(){
-  if(rOn && lOn == false){
-    matrix.translate(RIGHT, 2);
-    matrix.writeScreen();
-  }
-  else if(lOn && rOn == false){
-    matrix.translate(LEFT, 2);
-    matrix.writeScreen();
-  }
-}
+////////////////////////////////////////////////////////
+//////////////////////LOOP FUNCTIONS////////////////////////
+////////////////////////////////////////////////////////
 
 void checkTurning(){
   right = digitalRead(turnRpin);
   left = digitalRead(turnLpin);
   if(right == HIGH && rightOld == LOW){
       rOn =! rOn;
-   }
-   
-   //debating else if; the probability of both HIGH seems low
-   
-   //this could be a stupid question; i should find out 
-   //the time required to parse each line
-   if(left == HIGH && leftOld == LOW){
+      turningChanged();
+  }
+   else if(left == HIGH && leftOld == LOW){
      lOn =! lOn;
+     turningChanged();
    } 
    rightOld = right; 
    leftOld = left;
+}
+
+void checkBraking(){
+  //declare int brakeV and int brakeVPin and boolean brakeOn///////////////////////////////////////////
+  brakeV = digitalRead(brakeVPin);
+  if(brakeV == HIGH){
+    brakeOn = true;
+  }
+  else if (brakeV == LOW){
+    brakeOn = false;
+  }
 }
 
 
@@ -180,19 +164,107 @@ void printLCD(){
   lcd.print("MPH: " + miles);
 }
 
-void arrow(int s, int t){
-  if(t == 1){
-    matrix.clearScreen();
+
+
+
+  //also turning indicators...
+////////////////////////////////////////////////////////
+//////////////REFERENTIAL* FUNCTIONS////////////////////////
+////////////////////////////////////////////////////////
+
+////////////////////////////////
+///////////SET FUNCTIONS//////////
+////////////////////////////////
+
+void setLEDShape(){
+  if(brakeOn){
+    draw
   }
-  else if(s == 1){
-     matrix.drawLine(0, 0, (matrix.width()-1)/2, matrix.height()-1, 1);
-     matrix.drawLine((matrix.width()-1)/2, 0, 0, matrix.height()-1, 1);
-     matrix.writeScreen();
+  //right turning indicator is on, left off
+  if (rOn && lOn == false){
+    type = 1;
+    draw(RIGHT);
   }
-  else if(s == 1){}
-  else if(s == 3){}
+  //left turning indicator is on, right off
+  else if (lOn && rOn == false){
+    type = 2;
+    draw(LEFT);
+  }
+  else if(rOn && lOn){
+    type = 3;
+    draw(FLASH);
+  }
+  //left and right turning indicators are off
+  //
+  else if(rOn == flase && lOn == false)
+    //everything off/ flushed
+    matrix.clrScreen();
+    matrix.clrLEDs();
+    type = 4;
+  }
 }
-  
 
+void braking(){
+  if(brakeOn){
+    type = 5;
+    draw(BRAKING); 
+}
 
+////////////////////////////////
+////////SHAPE FUNCTIONS///////////
+////////////////////////////////
+
+void draw(int t){
+  matrix.clearScreen();
+  matrix.clearLEDs();
+  //right arrow
+  if(t == 1){
+    matrix.drawLine(0, 0, ((matrix.width())/3)-1, (matrix.height()/2)-1, 1);
+    matrix.drawLine((matrix.width()/3)-1, (matrix.height())/2, 0, matrix.height()-1, 1);
+     
+    matrix.drawLine((matrix.width()/3), 0, (2*matrix.width()/3)-1, (matrix.height()/2)-1, 1);
+    matrix.drawLine((2*matrix.width()/3)-1, (matrix.height())/2,matrix.width()/3, matrix.height()-1, 1);
+     
+    matrix.drawLine((2*matrix.width()/3), 0, matrix.width()-1, (matrix.height()/2)-1, 1);
+    matrix.drawLine(matrix.width()-1, matrix.height()/2, 2*matrix.width()/3, matrix.height()-1, 1);
+  }
+  //left arrow
+  else if(t == 2){
+     matrix.drawLine(matrix.width()-1, 0, 2*matrix.width()/3, matrix.height()/2-1, 1);
+     matrix.drawLine(2*matrix.width()/3, matrix.height()/2, matrix.width()-1, matrix.height()-1, 1);
+     matrix.drawLine(2*matrix.width()/3-1, 0, matrix.width()/3, matrix.height()/2-1, 1);
+     matrix.drawLine(matrix.width()/3, matrix.height()/2, 2*matrix.width()/3-1, matrix.height()-1, 1);
+     matrix.drawLine(matrix.width()/3-1, 0, 0, matrix.height()/2-1, 1);
+     matrix.drawLine(0, matrix.height()/2, matrix.width()/3-1, matrix.height()-1, 1);
+  }
+  //flash shape
+  else if (t == 3){
+    //flash shape
+  }
+  //brake shape
+  else if (t == 4){
+    //brake shape
+  }
+  matrix.writeScreen();
+}
+
+////////////////////////////////
+////////TIMER FUNCTIONS///////////
+////////////////////////////////
+void scroll(){ //or turning on
+  if(type == 1){
+    matrix.translate(RIGHT, stepSize));
+  }
+  else if(type == 2){
+    matrix.translate(LEFT, stepSize);
+    matrix.writeScreen();
+  }
+}
+
+void flash(){
+  if(type == 3){
+    blinkOn =! blinkOn;
+    matrix.blink(blinkOn);
+  }
+}
 
