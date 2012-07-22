@@ -1,4 +1,4 @@
-int numMatrices = 2;
+int numMatrices = 1;
 int [][] LEDPixels;
 int [][] LEDTempPixels;
 int wLEDs = 24 * numMatrices;
@@ -21,14 +21,21 @@ boolean click1;
 boolean circleOn;
 boolean fillCircle = false;
 int LEDon = 1;
-LinkedList<Circle> circles = new LinkedList<Circle>();
+LinkedList<LEDCircle> circles = new LinkedList<LEDCircle>();
 //LinkedList<PLine> LEDlines = new LinkedList<PLine>();
 
+
+///////////////////////////////////////////////
+/////////////////////////////SETUP//////////////////////////
+///////////////////////////////////////////////////////
 void setup(){
   size(w, h+100);
   LEDPixels = new int[wLEDs][hLEDs];
 }
 
+///////////////////////////////////////////////
+/////////////////////////////DRAW//////////////////////////
+///////////////////////////////////////////////////////
 void draw(){
   background(220);
   text("C: draw circle", 20, h+20);
@@ -92,12 +99,12 @@ void mousePressed() {
       lineOn = false;
       click1 = true;
       drawing = false;
-      setLine(x0Click, y0Click, x1Click, y1Click, LEDon);
+      //setLine(x0Click, y0Click, x1Click, y1Click, LEDon);
     }
   }
   else if(circleOn){
     if(click1){
-      Circle c = new Circle(mouseX, mouseY, fillCircle, space);
+      LEDCircle c = new LEDCircle(mouseX, mouseY, fillCircle, space);
       circles.add(c);
       drawing = true;
       click1 = false;
@@ -151,58 +158,6 @@ void keyPressed(){
     }
     else if(key == 'f'){
       fillCircle = ! fillCircle;
-    }
-  }
-}
-
-
-void setLine(int x0, int y0, int x1, int y1, int on){
-  //int x0 = x0T/space;
- // int y0 = y0T/space;
-  //int x1 = x1T/space;
-  //int y1 = y1T/space;
- boolean steep = abs(y1 - y0) > abs(x1 - x0);
-  if (steep) {
-    int xtemp0 = y0;
-    int xtemp1 = y1;
-    y0 = x0;
-    y1 = x1;
-    x0 = xtemp0;
-    x1 = xtemp1;
-  }
-
-  if (x0 > x1) {
-    int xtemp0 = x0;
-    int ytemp0 = y0;
-    x0 = x1;
-    y0 = y1;
-    x1 = xtemp0;
-    y1 = ytemp0;
-  }
-
-  int dx, dy;
-  dx = x1 - x0;
-  dy = abs(y1 - y0);
-
-  int err = dx / 2;
-  int ystep;
-
-  if (y0 < y1) {
-    ystep = 1;
-  } 
-  else {
-    ystep = -1;
-  }
-  for (; x0<=x1; x0++) {
-    if (steep) {
-      setPixel(y0, x0, on);
-    } else {
-      setPixel(x0, y0, on);
-    }
-    err -= dy;
-    if (err < 0) {
-      y0 += ystep;
-      err += dx;
     }
   }
 }
