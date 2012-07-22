@@ -6,12 +6,18 @@
 #define CS   4
 #define CS2  5
 
+#define RIGHT 1
+#define LEFT 2
+#define UP 3
+#define DOWN 4
+
 // use this line for single matrix
 HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
 // use this line for two matrices!
 //HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS, CS2);
 
 Timer t;
+int scrollTime = 130;
 
 void setup() {
   Serial.begin(9600);
@@ -19,48 +25,18 @@ void setup() {
   matrix.fillScreen();
   delay(500);
   matrix.clearScreen();
-  arrow(); 
-  //t.every(blinkTime, arrow);
+  arrow(LEFT); 
+  t.every(scrollTime, scroll);
 }
 
 void loop() {
-  matrix.translate(
-}
-
- void scroll(int s){
-  //if(on){
-  //  on = true;
-  //}
-  if(s == 2){
-    /*
-    int x0 = i*matrix.width()/3;
-    int y0 = 0;
-    int x1 = (i+1)*matrix.width()/3-1;
-    int y1 = matrix.height()/2-1;
-    int x2
-    int y2
-    */
-     
-     
-     
-    
-      matrix.translate(3);
-      Serial.println(matrix.getLEDValue(0, 8));
-      matrix.writeScreen();
-      delay(2000);
-    
- }
   
-  else if(s == 4){
-     matrix.drawLine(0, 0, (matrix.width()-1)/2, matrix.height()-1, 1);
-     matrix.drawLine((matrix.width()-1)/2, 0, 0, matrix.height()-1, 1);
-     matrix.writeScreen();
-  }
-  else if(s == 3){}
+  t.update();
 }
 
-void arrow(int d);
-  if(d = 1){
+void arrow(int d){
+  //right arrow
+  if(d == 1){
     matrix.drawLine(0, 0, ((matrix.width())/3)-1, (matrix.height()/2)-1, 1);
     matrix.drawLine((matrix.width()/3)-1, (matrix.height())/2, 0, matrix.height()-1, 1);
      
@@ -71,4 +47,19 @@ void arrow(int d);
     matrix.drawLine(matrix.width()-1, matrix.height()/2, 2*matrix.width()/3, matrix.height()-1, 1);
     matrix.writeScreen();
   }
+  //left arrow
+  else if(d == 2){
+     matrix.drawLine(matrix.width()-1, 0, 2*matrix.width()/3, matrix.height()/2-1, 1);
+     matrix.drawLine(2*matrix.width()/3, matrix.height()/2, matrix.width()-1, matrix.height()-1, 1);
+     matrix.drawLine(2*matrix.width()/3-1, 0, matrix.width()/3, matrix.height()/2-1, 1);
+     matrix.drawLine(matrix.width()/3, matrix.height()/2, 2*matrix.width()/3-1, matrix.height()-1, 1);
+     matrix.drawLine(matrix.width()/3-1, 0, 0, matrix.height()/2-1, 1);
+     matrix.drawLine(0, matrix.height()/2, matrix.width()/3-1, matrix.height()-1, 1);
+     matrix.writeScreen();
+  }
+}
+
+void scroll(){
+  matrix.translate(LEFT, 2);
+  matrix.writeScreen();
 }

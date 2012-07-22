@@ -1,5 +1,6 @@
 int numMatrices = 2;
-boolean [][] LEDpixels;
+int [][] LEDPixels;
+int [][] LEDTempPixels;
 int wLEDs = 24 * numMatrices;
 int hLEDs = 16;
 int circleD = 12;
@@ -8,34 +9,52 @@ int space = circleD + 2 * padding;
 int w = wLEDs*space;
 int h = hLEDs*space;
 boolean label;
-int l0x;
-int l0y;
-int l1x;
-int l1y;
+int x0Click;
+int y0Click;
+int x1Click;
+int y1Click;
+int xClick;
+int yClick;
+boolean drawing;
 boolean lineOn;
-boolean lclick1;
+boolean click1;
+boolean circleOn;
+boolean fillCircle = false;
+int LEDon = 1;
+LinkedList<Circle> circles = new LinkedList<Circle>();
+//LinkedList<PLine> LEDlines = new LinkedList<PLine>();
 
 void setup(){
-  size(w, h);
-  LEDpixels = new boolean[wLEDs][hLEDs];
+  size(w, h+100);
+  LEDPixels = new int[wLEDs][hLEDs];
 }
 
 void draw(){
   background(220);
+  text("C: draw circle", 20, h+20);
+  text("F: toggle fill", 20, h+40);
+  text("L: draw line", 20, h+60);
+  text("O: toggle LED on/off", 20, h+80);
   ellipseMode(CORNER);
   stroke(0);
   for(int i = 0; i < wLEDs; i ++){
     for(int j = 0; j < hLEDs; j++){
       fill(0, 0, 0);
-      if(LEDpixels[i][j] == true){
+      if(circleOn && click1 == false && circles.getLast().inCircle(i, j)){
+        if(LEDon == 1){
+          fill(255, 0, 0);
+        }
+      }
+      else if(LEDPixels[i][j] == 1){
         fill(255, 0, 0);
       }
-      ellipse(i*space, j*space, circleD, circleD);
+      ellipse(i*space+padding, j*space+padding, circleD, circleD);
     }
   }
-  line(0, h/2-padding, w, h/2-padding);
-  for(int i = 0; i < numMatrices*3; i++){
-    line(i*w/(3*numMatrices)- padding, 0, i*w/(3*numMatrices) - padding, h);
+  line(0, h/2, w, h/2);
+  line(0, h, w, h);
+  for(int i = 1; i < numMatrices*3; i++){
+    line(i*w/(3*numMatrices), 0, i*w/(3*numMatrices), h);
   }
   if(label == true){
     String pixelLoc = ("x: " + mouseX/space + ", y: " + mouseY/space);
@@ -46,49 +65,119 @@ void draw(){
     fill(0, 255, 0);
     text(pixelLoc, mouseX, mouseY);
   }
+  if(lineOn && click1 == false){
+    line(xClick, yClick, mouseX, mouseY);
+  }
+  else if(circleOn && click1 == false){
+    circles.getLast().drawCircleCursor(mouseX, mouseY);
+  }
+ 
 }
-
+///////////////////////////////////////////////
+/////////////////////////////MOUSE PRESSED////////////////////
+///////////////////////////////////////////////////////
 void mousePressed() {
   int x = mouseX/space;
   int y = mouseY/space;
   if(lineOn){
-    if(lclick1){
-      l0x = x;
-      l0y = y;
-      lclick1 = false;
+    if(click1){
+      //PLine l = new PLine(mouseX, mouseY, space);
+      setPixel(mouseX/space, mouseY/space, LEDon);
+      drawing = true;
+      click1 = false;
     }
     else{
-      l1x = x;
-      l1y = y;
+      x1Click = mouseX/space;
+      y1Click = mouseY/space;
       lineOn = false;
-      lclick1 = true;
-      drawLine(l0x, l0y, l1x, l1y);
+      click1 = true;
+      drawing = false;
+      setLine(x0Click, y0Click, x1Click, y1Click, LEDon);
     }
   }
+  else if(circleOn){
+    if(click1){
+      Circle c = new Circle(mouseX, mouseY, fillCircle, space);
+      circles.add(c);
+      drawing = true;
+      click1 = false;
+    }
+    else{
+      x1Click = mouseX;
+      y1Click = mouseY;
+      circleOn = false;
+      click1 = true;
+      drawing = false;
+      setCircle(LEDon);
+    }
+  }
+  
   else{
-    LEDpixels[x][y] = !LEDpixels[x][y];
+    if(LEDPixels[x][y] == 1){
+      LEDPixels[x][y] = 0;
+    }
+    else{
+      LEDPixels[x][y] = 1;
+    }
   }
 }
 
+///////////////////////////////////////////////
+////////////////////////////////////KEYS/////////////////////
+///////////////////////////////////////////////////////
 void keyPressed(){
-  if(key == 'o'){
+  if(key == 'i'){
     label = !label;
   }
-  if(key == 'l'){
-    lineOn = true;
+  
+  if(drawing == false){
+    if(key == 'o'){
+      if(LEDon == 1){
+        LEDon = 0;
+      }
+      else{
+        LEDon = 1;
+      }
+    }
+    else if(key == 'l'){
+      lineOn = true;
+      click1 = true;
+      drawing = true;
+    }
+    else if(key == 'c'){
+      circleOn = true;
+      click1 = true;
+      drawing = true;
+    }
+    else if(key == 'f'){
+      fillCircle = ! fillCircle;
+    }
   }
 }
 
-void drawLine(int x0, int y0, int x1, int y1){
+
+void setLine(int x0, int y0, int x1, int y1, int on){
+  //int x0 = x0T/space;
+ // int y0 = y0T/space;
+  //int x1 = x1T/space;
+  //int y1 = y1T/space;
  boolean steep = abs(y1 - y0) > abs(x1 - x0);
   if (steep) {
-    swap(x0, y0);
-    swap(x1, y1);
+    int xtemp0 = y0;
+    int xtemp1 = y1;
+    y0 = x0;
+    y1 = x1;
+    x0 = xtemp0;
+    x1 = xtemp1;
   }
 
   if (x0 > x1) {
-    swap(x0, x1);
-    swap(y0, y1);
+    int xtemp0 = x0;
+    int ytemp0 = y0;
+    x0 = x1;
+    y0 = y1;
+    x1 = xtemp0;
+    y1 = ytemp0;
   }
 
   int dx, dy;
@@ -100,14 +189,15 @@ void drawLine(int x0, int y0, int x1, int y1){
 
   if (y0 < y1) {
     ystep = 1;
-  } else {
-    ystep = -1;}
-
+  } 
+  else {
+    ystep = -1;
+  }
   for (; x0<=x1; x0++) {
     if (steep) {
-      LEDpixels[y0][x0] = 1;
+      setPixel(y0, x0, on);
     } else {
-      LEDpixels[x0][y0] = 1;
+      setPixel(x0, y0, on);
     }
     err -= dy;
     if (err < 0) {
@@ -116,7 +206,59 @@ void drawLine(int x0, int y0, int x1, int y1){
     }
   }
 }
+
+
+void setPixel(int x, int y, int on){
+  LEDPixels[x][y] = on;
+}
+
+void setCircle(int on){
+  for(int x = 0; x < wLEDs; x++){
+    for(int y = 0; y < hLEDs; y++){
+      if(circles.getLast().inCircle(x, y)){
+        LEDPixels[x][y] = on;
+      }
+    }
+  }
+}
+
+/*
+void buttons(){
+ int boxD = 55;
+ int padX = 10;
+ int padY = 20;
  
+ 
+ rect((padX+boxD)+padX, h+padY, boxD, boxD);
+ rect(2*(padX+boxD)+padX, h+padY, boxD, boxD);
+ rect(3*(padX+boxD)+padX, h+padY, boxD, boxD);
+ 
+ ellipseMode(CENTER);
+ rectMode(CENTER);
+ 
+ rectMode(CORNER);
+ noFill();
+ if(circleOn){
+   fill(90,250,220);
+ }
+ rect(padX, h+padY, boxD, boxD);
+ if(fillCircle){
+   fill(255,0,0);
+   stroke(255, 0, 0);
+   ellipse(padX+boxD/2, h+boxD/2+padY, 40, 40);
+ }
+ else if(fillCircle == false){
+   noFill();
+   stroke(255, 0, 0);
+   ellipse(padX+boxD/2, h+boxD/2+padY, 40, 40);
+ }
+ rect(3*(boxD)/2+2*padX, h+boxD/2+padY, 20, 20);
+ line(2*boxD+2*padX+padX+10, h+boxD+padY-10, 3*boxD+2*padX+padX-10, h+padY+10);
+ text("Fill", 3.5*boxD+3*padX, h+boxD/2+padY+5);
+}
+ */
+
+
  
  
 

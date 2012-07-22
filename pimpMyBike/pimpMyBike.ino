@@ -178,47 +178,39 @@ void printLCD(){
 
 void setLEDShape(){
   if(brakeOn){
-    draw
+    drawBraking();
   }
   //right turning indicator is on, left off
-  if (rOn && lOn == false){
-    type = 1;
-    draw(RIGHT);
+  else if (rOn && lOn == false){
+    drawRight();
   }
   //left turning indicator is on, right off
   else if (lOn && rOn == false){
-    type = 2;
-    draw(LEFT);
+    drawLeft();
   }
   else if(rOn && lOn){
-    type = 3;
-    draw(FLASH);
+    drawFlash();
   }
   //left and right turning indicators are off
-  //
+  //turn screen off
   else if(rOn == flase && lOn == false)
     //everything off/ flushed
-    matrix.clrScreen();
-    matrix.clrLEDs();
-    type = 4;
+    blankScreen();
   }
 }
 
 void braking(){
   if(brakeOn){
     type = 5;
-    draw(BRAKING); 
+    drawBrake(); 
 }
 
 ////////////////////////////////
 ////////SHAPE FUNCTIONS///////////
 ////////////////////////////////
 
-void draw(int t){
-  matrix.clearScreen();
-  matrix.clearLEDs();
-  //right arrow
-  if(t == 1){
+void drawRight(){
+    blankScreen();
     matrix.drawLine(0, 0, ((matrix.width())/3)-1, (matrix.height()/2)-1, 1);
     matrix.drawLine((matrix.width()/3)-1, (matrix.height())/2, 0, matrix.height()-1, 1);
      
@@ -227,27 +219,31 @@ void draw(int t){
      
     matrix.drawLine((2*matrix.width()/3), 0, matrix.width()-1, (matrix.height()/2)-1, 1);
     matrix.drawLine(matrix.width()-1, matrix.height()/2, 2*matrix.width()/3, matrix.height()-1, 1);
-  }
-  //left arrow
-  else if(t == 2){
+    matrix.writeScreen();
+}
+
+
+void drawLeft(){
      matrix.drawLine(matrix.width()-1, 0, 2*matrix.width()/3, matrix.height()/2-1, 1);
      matrix.drawLine(2*matrix.width()/3, matrix.height()/2, matrix.width()-1, matrix.height()-1, 1);
      matrix.drawLine(2*matrix.width()/3-1, 0, matrix.width()/3, matrix.height()/2-1, 1);
      matrix.drawLine(matrix.width()/3, matrix.height()/2, 2*matrix.width()/3-1, matrix.height()-1, 1);
      matrix.drawLine(matrix.width()/3-1, 0, 0, matrix.height()/2-1, 1);
      matrix.drawLine(0, matrix.height()/2, matrix.width()/3-1, matrix.height()-1, 1);
-  }
-  //flash shape
-  else if (t == 3){
-    //flash shape
-  }
-  //brake shape
-  else if (t == 4){
-    //brake shape
-  }
+     matrix.writeScreen();
+}
+
+void drawFlash(){
   matrix.writeScreen();
 }
 
+
+
+
+void blankScreen(){
+  matrix.clearScreen();
+  matrix.clearLEDs();
+}
 ////////////////////////////////
 ////////TIMER FUNCTIONS///////////
 ////////////////////////////////

@@ -365,10 +365,27 @@ uint8_t HT1632LEDMatrix::getLEDs() {
 }
  */
     
-void HT1632LEDMatrix::translate(uint8_t d, uint8_t n) {
-    //d specifies direction and n specifies the step size
-    for (int i = 0; i < n; i++) {
-        step(d);
+void HT1632LEDMatrix::translate(uint8_t x, uint8_t y) {
+    //x and y are # of steps in each dimension
+    if (x > 0) {
+        for (int i = 0; i < x; i++) {
+            stepRight();
+        }
+    }
+    else if (x < 0){  
+        for (int i = 0; i > x; i--) {
+            stepLeft();
+        }
+    }
+    if (y > 0){
+        for (int i = 0; i < y; i++) {
+            stepUp();
+        }
+    }
+    else if (y < 0){
+        for (int i = 0; i > y; i--) {
+            stepDown();
+        }
     }
     setLEDs();
 }
@@ -383,92 +400,87 @@ void HT1632LEDMatrix::translateDiagonal(uint8_t x, uint8_t y, uint8_t n) {
     setLEDs();
 }
     
-void HT1632LEDMatrix::step(uint8_t d) {
-    //move to the right
-    if (d==1) {
-        //store the last column 
-        uint8_t lastCol[_height];
+void HT1632LEDMatrix::stepRight() {
+    //store the last column 
+    uint8_t lastCol[_height];
+    for (uint16_t h = 0; h < _height; h++) {
+        lastCol[h] = LEDs[_width - 1][h];
+    }
+    
+    //move pixels to the right one column at a time
+    //by setting each column equal to the column on the left
+    for (uint16_t w = _width; w > 0; w--) {
         for (uint16_t h = 0; h < _height; h++) {
-            lastCol[h] = LEDs[_width - 1][h];
+            LEDs[w][h] = LEDs[w-1][h];
         }
-        
-        //move pixels to the right one column at a time
-        //by setting each column equal to the column on the left
-        for (uint16_t w = _width; w > 0; w--) {
-            for (uint16_t h = 0; h < _height; h++) {
-                LEDs[w][h] = LEDs[w-1][h];
-            }
-        }
-        //set the first column = to last column of array
+    }
+    //set the first column = to last column of array
+    for (uint16_t h = 0; h < _height; h++) {
+        LEDs[0][h] = lastCol[h];
+    }
+}
+    
+void HT1632LEDMatrix::stepLeft() {
+    //store the first column 
+    uint8_t firstCol[_height];
+    for (uint16_t h = 0; h < _height; h++) {
+        firstCol[h] = LEDs[0][h];
+    }
+    
+    //move pixels to the left one column at a time
+    //by setting each column equal to the column on the right
+    for (uint16_t w = 0; w < _width-1; w++) {
         for (uint16_t h = 0; h < _height; h++) {
-            LEDs[0][h] = lastCol[h];
+            LEDs[w][h] = LEDs[w+1][h];
         }
     }
     
-    //move to the left
-    if (d==2) {
-        //store the first column 
-        uint8_t firstCol[_height];
-        for (uint16_t h = 0; h < _height; h++) {
-            firstCol[h] = LEDs[0][h];
-        }
-        
-        //move pixels to the left one column at a time
-        //by setting each column equal to the column on the right
-        for (uint16_t w = 0; w < _width-1; w++) {
-            for (uint16_t h = 0; h < _height; h++) {
-                LEDs[w][h] = LEDs[w+1][h];
-            }
-        }
-        
-        //set the last column = to first column of the matrix
-        for (uint16_t h = 0; h < _height; h++) {
-            LEDs[_width-1][h] = firstCol[h];
-        }
+    //set the last column = to first column of the matrix
+    for (uint16_t h = 0; h < _height; h++) {
+        LEDs[_width-1][h] = firstCol[h];
     }
-    //move up
-    if (d==3) {
-        //store the first row 
-        uint8_t firstRow[_width];
-        for (uint16_t w = 0; w < _width; w++) {
-            firstRow[w] = LEDs[w][0];
-        }
-        
-        //move pixels up one row at a time
-        //by setting each row = to row below it
-        for (uint16_t h = 0; h < _height; h++){
-            for (uint16_t w = 0; w < _width; w++) {
-                LEDs[w][h]=LEDs[w][h+1];
-            }
-        }
-        
-        //set the last row equal to the first row
-        for (uint16_t w = 0; w < _width; w++) {
-            LEDs[w][_height-1]= firstRow[w];
-        } 
+}
+    
+void HT1632LEDMatrix::stepUp() {
+    //store the first row 
+    uint8_t firstRow[_width];
+    for (uint16_t w = 0; w < _width; w++) {
+        firstRow[w] = LEDs[w][0];
     }
     
-    //move down
-    if (d==4) {
-        //store the last row 
-        uint8_t lastRow[_width];
+    //move pixels up one row at a time
+    //by setting each row = to row below it
+    for (uint16_t h = 0; h < _height; h++){
         for (uint16_t w = 0; w < _width; w++) {
-            lastRow[w] = LEDs[w][_height-1];
+            LEDs[w][h]=LEDs[w][h+1];
         }
-        
-        //move pixels down one row at a time
-        //by setting each row = to row above it
-        for (uint16_t h = _height-1; h > 0; h++){
-            for (uint16_t w = 0; w < _width; w++) {
-                LEDs[w][h]=LEDs[w][h-1];
-            }
-        }
-    
-        //set the first row equal to the last row
-        for (uint16_t w = 0; w < _width; w++) {
-            LEDs[w][0]= lastRow[w];
-        } 
     }
+    
+    //set the last row equal to the first row
+    for (uint16_t w = 0; w < _width; w++) {
+        LEDs[w][_height-1]= firstRow[w];
+    } 
+}
+    
+void HT1632LEDMatrix::stepDown() {
+    //store the last row 
+    uint8_t lastRow[_width];
+    for (uint16_t w = 0; w < _width; w++) {
+        lastRow[w] = LEDs[w][_height-1];
+    }
+    
+    //move pixels down one row at a time
+    //by setting each row = to row above it
+    for (uint16_t h = _height-1; h > 0; h++){
+        for (uint16_t w = 0; w < _width; w++) {
+            LEDs[w][h]=LEDs[w][h-1];
+        }
+    }
+
+    //set the first row equal to the last row
+    for (uint16_t w = 0; w < _width; w++) {
+        LEDs[w][0]= lastRow[w];
+    } 
 }    
 
 //////////////////////////////////////////////////////////////////////////
