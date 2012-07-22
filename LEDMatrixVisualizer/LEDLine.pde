@@ -12,20 +12,20 @@ class LEDLine {
   int y1P;
   //space is the space between LEDs on the visualizer
   //"on" stores whether or not the LEDs are lit up
-  int space;
-  int on;
+  boolean on;
   //this linked list of points keeps track of all locations of
   //LEDs comprising this line
   LinkedList<LEDPoint> LEDPoints = new LinkedList<LEDPoint>();
 
 
 
-  public LEDLine(int x, int y, int o){
+  public LEDLine(int x, int y, boolean o){
     x0 = x;
     y0 = y;
-    space = s;
     x0P = x/space;
     y0P = y/space;
+    x1P = x/space;
+    y1P = y/space;
     on = o;
   }
   
@@ -37,55 +37,59 @@ class LEDLine {
     LEDPoints.clear();
     x1P = xt/ space;
     y1P = yt/ space;
-    boolean steep = abs(y1P - y0P) > abs(x1P - x0P);
+    int x0T = x0P;
+    int y0T = y0P;
+    int x1T = x1P;
+    int y1T = y1P;
+    boolean steep = abs(y1T - y0T) > abs(x1T - x0T);
     if (steep) {
-      int xtemp0 = y0P;
-      int xtemp1 = y1P;
-      y0P = x0P;
-      y1P = x1P;
-      x0P = xtemp0;
-      x1P = xtemp1;
+      int xtemp0 = y0T;
+      int xtemp1 = y1T;
+      y0T = x0T;
+      y1T = x1T;
+      x0T = xtemp0;
+      x1T = xtemp1;
     }
 
-    if (x0P > x1P) {
-      int xtemp0 = x0P;
-      int ytemp0 = y0P;
-      x0P = x1P;
-      y0P = y1P;
-      x1P = xtemp0;
-      y1P = ytemp0;
+    if (x0T > x1T) {
+      int xtemp0 = x0T;
+      int ytemp0 = y0T;
+      x0T = x1T;
+      y0T = y1T;
+      x1T = xtemp0;
+      y1T = ytemp0;
     }
   
     int dx, dy;
-    dx = x1P - x0P;
-    dy = abs(y1P - y0P);
+    dx = x1T - x0T;
+    dy = abs(y1T - y0T);
   
     int err = dx / 2;
     int ystep;
   
-    if (y0P < y1P) {
+    if (y0T < y1T) {
       ystep = 1;
     } 
     else {
       ystep = -1;
     }
-    for (; x0P<=x1P; x0P++) {
+    for (; x0T<=x1T; x0T++) {
       if (steep) {
-        addToShape(y0P, x0P);
+        addToShape(y0T, x0T);
       } 
       else {
-        addToShape(x0P, y0P);
+        addToShape(x0T, y0T);
       }
       err -= dy;
       if (err < 0) {
-        y0P += ystep;
+        y0T += ystep;
         err += dx;
       }
     }
   }
   
   void addToShape(int x, int y){
-    LEDPoint p = new LEDPoint(x, y);
+    LEDPoint p = new LEDPoint(x, y, on);
     LEDPoints.add(p);
   }
   
@@ -94,14 +98,13 @@ class LEDLine {
       if(LEDPoints.get(i).equal(x, y)){
         return true;
       }
-      else{
-        return false;
-      }
     }
+    return false;
   }
   
-  //this function takes 
-  //void translateShape(int x, int y){
-  //}
-  
+  void drawLine(){
+    for(int i = 0; i < LEDPoints.size(); i++){
+      LEDPoints.get(i).drawPoint();
+    }
+  }   
 }
