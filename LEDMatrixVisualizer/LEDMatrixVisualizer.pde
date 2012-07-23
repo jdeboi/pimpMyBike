@@ -1,3 +1,19 @@
+/*
+Jenna deBoisblanc
+July, 2012
+Shout out to Adafruit Industries
+
+This LED Visualizer makes it easy to design patterns for use with the 
+16x24 Red LED Matrix Panel - Chainable HT1632C Driver, which is produced 
+by Adafruit Industries and available here: https://www.adafruit.com/products/555.
+
+Once your design is complete, you can export the pixel values to a text file.
+
+All of the shapes are stored in linked lists.  At some point, it'd be nice to write
+functions to animate individal shape objects.
+*/
+
+//change this number if you're using more than one matrix
 int numMatrices = 1;
 int wLEDs = 24 * numMatrices;
 int hLEDs = 16;
@@ -45,7 +61,7 @@ void draw(){
   ellipseMode(CORNER);
   stroke(0);
    
-  ///////////write the stored pixels to the visualizer///////////
+  //write the stored pixels to the visualizer///////////
   for(int i = 0; i < wLEDs; i ++){
     for(int j = 0; j < hLEDs; j++){
       fill(0, 0, 0);
@@ -56,7 +72,7 @@ void draw(){
     }
   }
   
-  /////////////set pixels if currently drawing//////////////////
+  //set pixels if currently drawing//////////////////
   if(drawing && click1 == false){
     if(lineOn){
       LEDLines.getLast().setLineCursor(mouseX, mouseY);
@@ -72,7 +88,7 @@ void draw(){
     }
   }
   
-  /////////////////////////Aesthetic Parts of Matrix/////////////
+  //Aesthetic Parts of Matrix////////////////////////
   //draw the matrix lines
   strokeWeight(2);
   fill(0);
@@ -195,7 +211,6 @@ void keyPressed(){
   if(key == 'n'){
     label = !label;
   }
-  
   if(drawing == false){
     if(key == 'o'){
       LEDOn =! LEDOn;
@@ -232,6 +247,9 @@ void keyPressed(){
   }
 }
 
+///////////////////////////////////////////////
+//////////////////////////////SET FUNCTIONS/////////////////////
+///////////////////////////////////////////////////////
 
 void setPixel(int x, int y, int on){
   LEDPixels[x][y] = on;
@@ -250,6 +268,10 @@ void setShape(int [] shapePoints){
   }
 }
 
+///////////////////////////////////////////////
+///////////////////////////////IMPORT/EXPORT/////////////////////
+///////////////////////////////////////////////////////
+
 void exportFrame(){
   exportCounter++;
   String[] lines = new String[hLEDs +1];
@@ -261,11 +283,14 @@ void exportFrame(){
     values += LEDPixels[wLEDs-1][y]; 
     lines[y] = values; 
   } 
-  saveStrings("frames" + exportCounter + ".txt", lines);
+  //To create new files instead of overwriting use the line below
+  //saveStrings("frames" + exportCounter + ".txt", lines);
+  saveStrings("frames.txt", lines);
 }
 
 void importFrame(){
-  input = loadStrings("frames"+exportCounter+".txt");
+  //specify a different text file to import other frames
+  input = loadStrings("frames.txt");
   for (int i = 0; i < hLEDs; i++) {
     String[] elements = split(input[i], "\\s");
     for(int j = 0; j < elements.length; j++){
