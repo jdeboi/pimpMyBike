@@ -16,7 +16,7 @@ class LEDCircle {
   boolean fillC;
   LinkedList<LEDPoint> LEDPoints = new LinkedList<LEDPoint>();
   
-  public LEDCircle(int x, int y, boolean f, boolean on){
+  public LEDCircle(int x, int y, boolean f, boolean o){
     x0 = x;
     y0 = y;
     x1 = x;
@@ -26,6 +26,7 @@ class LEDCircle {
     r = 0;
     rP = 0;
     fillC = f;
+    on = o;
   }
   
   //x and y are mouseX and mouseY
@@ -40,7 +41,7 @@ class LEDCircle {
     int ddF_x = 1;
     int ddF_y = -2 * rP;
     int x = 0;
-    int y = r;
+    int y = rP;
   
     addToShape(x0P, y0P+rP);
     addToShape(x0P, y0P-rP);
@@ -105,8 +106,10 @@ class LEDCircle {
   }
   
   void addToShape(int x, int y){
-    LEDPoint p = new LEDPoint(x, y, on);
-    LEDPoints.add(p);
+    if(x >= 0 && x < wLEDs && y >= 0 && y < hLEDs){
+      LEDPoint p = new LEDPoint(x, y, on);
+      LEDPoints.add(p);
+    }
   }
   
   boolean inCircle(int x, int y){
@@ -126,11 +129,11 @@ class LEDCircle {
 
   int [] getCircle(){
     int [] circlePoints = new int [LEDPoints.size()*2];   
-    for(int i = 0; i < circlePoints.length; i = i+2){
-      int x = LEDPoints.get(i/2).x;
-      int y = LEDPoints.get(i/2).y;
-      circlePoints[i] = x;
-      circlePoints[i+1] = y;
+    for(int i = 0; i < LEDPoints.size(); i++){
+      int x = LEDPoints.get(i).x;
+      int y = LEDPoints.get(i).y;
+      circlePoints[i*2] = x;
+      circlePoints[i*2+1] = y;
     }
     return circlePoints;
   } 

@@ -1,4 +1,4 @@
-int numMatrices = 1;
+int numMatrices = 2;
 int wLEDs = 24 * numMatrices;
 int hLEDs = 16;
 int circleD = 12;
@@ -38,7 +38,6 @@ void setup(){
 ///////////////////////////////////////////////////////
 void draw(){
   background(220);
-  
   ellipseMode(CORNER);
   stroke(0);
    
@@ -71,6 +70,7 @@ void draw(){
   
   /////////////////////////Aesthetic Parts of Matrix/////////////
   //draw the matrix lines
+  fill(0);
   line(0, h/2, w, h/2);
   line(0, h, w, h);
   for(int i = 1; i < numMatrices*3; i++){
@@ -107,6 +107,7 @@ void mousePressed() {
       LEDLines.add(l);
       drawing = true;
       click1 = false;
+      setShape(LEDLines.getLast().getLine());
     }
     else{
       lineOn = false;
@@ -179,6 +180,11 @@ void keyPressed(){
       click1 = true;
       drawing = true;
     }
+    else if(key == 'r'){
+      rectOn = true;
+      click1 = true;
+      drawing = true;
+    }
     else if(key == 'f'){
       fillOn = ! fillOn;
     }
@@ -191,7 +197,7 @@ void setPixel(int x, int y, int on){
 }
 
 void setShape(int [] shapePoints){
-  for(int i = 0; i < shapePoints.length; i++){
+  for(int i = 0; i < shapePoints.length; i=i+2){
    int x = shapePoints[i];
    int y = shapePoints[i+1];
    if(LEDOn){
@@ -203,41 +209,6 @@ void setShape(int [] shapePoints){
   }
 }
 
-/*
-void buttons(){
- int boxD = 55;
- int padX = 10;
- int padY = 20;
- 
- 
- rect((padX+boxD)+padX, h+padY, boxD, boxD);
- rect(2*(padX+boxD)+padX, h+padY, boxD, boxD);
- rect(3*(padX+boxD)+padX, h+padY, boxD, boxD);
- 
- ellipseMode(CENTER);
- rectMode(CENTER);
- 
- rectMode(CORNER);
- noFill();
- if(circleOn){
-   fill(90,250,220);
- }
- rect(padX, h+padY, boxD, boxD);
- if(fillOn){
-   fill(255,0,0);
-   stroke(255, 0, 0);
-   ellipse(padX+boxD/2, h+boxD/2+padY, 40, 40);
- }
- else if(fillOn == false){
-   noFill();
-   stroke(255, 0, 0);
-   ellipse(padX+boxD/2, h+boxD/2+padY, 40, 40);
- }
- rect(3*(boxD)/2+2*padX, h+boxD/2+padY, 20, 20);
- line(2*boxD+2*padX+padX+10, h+boxD+padY-10, 3*boxD+2*padX+padX-10, h+padY+10);
- text("Fill", 3.5*boxD+3*padX, h+boxD/2+padY+5);
-}
- */
 
 
  

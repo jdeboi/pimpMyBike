@@ -89,8 +89,10 @@ class LEDLine {
   }
   
   void addToShape(int x, int y){
-    LEDPoint p = new LEDPoint(x, y, on);
-    LEDPoints.add(p);
+    if(x >= 0 && x < wLEDs && y >= 0 && y < hLEDs){
+      LEDPoint p = new LEDPoint(x, y, on);
+      LEDPoints.add(p);
+    }
   }
   
   boolean inLine(int x, int y){
@@ -106,5 +108,16 @@ class LEDLine {
     for(int i = 0; i < LEDPoints.size(); i++){
       LEDPoints.get(i).drawPoint();
     }
-  }   
+  }
+
+  int [] getLine(){
+    int [] linePoints = new int [LEDPoints.size()*2];   
+    for(int i = 0; i < LEDPoints.size(); i++){
+      int x = LEDPoints.get(i).x;
+      int y = LEDPoints.get(i).y;
+      linePoints[i*2] = x;
+      linePoints[i*2+1] = y;
+    }
+    return linePoints;
+  } 
 }

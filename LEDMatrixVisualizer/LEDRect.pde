@@ -40,13 +40,29 @@ class LEDRect {
     y1P = yt/ space;
     w = x1P - x0P;
     h = y1P - y0P;
-    for(int i = 0; i < w; i++){
-      addToShape(x0P + i, y0P);
-      addToShape(x0P + i, y0P+h-1);
+    if(w > 0){
+      for(int i = 0; i <= w; i++){
+        addToShape(x0P + i, y0P);
+        addToShape(x0P + i, y0P+h);
+      }
     }
-    for(int i = 0; i < h; i++){
-      addToShape(x0P, y0P+i);
-      addToShape(x0P+w-1, y0P+i);
+    else if(w < 0){
+      for(int i = 0; i < abs(w)+1; i++){
+        addToShape(x0P - i, y0P);
+        addToShape(x0P - i, y0P+h);
+      }
+    }
+    if(h > 0){
+      for(int i = 0; i <= h; i++){
+        addToShape(x0P, y0P+i);
+        addToShape(x0P+w, y0P+i);
+      }
+    }
+    else if(h < 0){
+      for(int i = 0; i < abs(h); i++){
+        addToShape(x0P, y0P-i);
+        addToShape(x0P+w, y0P-i);
+      }
     }
     if(fillR){
       setFill();
@@ -62,8 +78,10 @@ class LEDRect {
   }
   
   void addToShape(int x, int y){
-    LEDPoint p = new LEDPoint(x, y, on);
-    LEDPoints.add(p);
+    if(x >= 0 && x < wLEDs && y >= 0 && y < hLEDs){
+      LEDPoint p = new LEDPoint(x, y, on);
+      LEDPoints.add(p);
+    }
   }
   
   boolean inRect(int x, int y){
@@ -77,14 +95,14 @@ class LEDRect {
   
   int [] getRect(){
     int [] rectPoints = new int [LEDPoints.size()*2];   
-    for(int i = 0; i < rectPoints.length; i = i+2){
-      int x = LEDPoints.get(i/2).x;
-      int y = LEDPoints.get(i/2).y;
-      rectPoints[i] = x;
-      rectPoints[i+1] = y;
+    for(int i = 0; i < LEDPoints.size(); i++){
+      int x = LEDPoints.get(i).x;
+      int y = LEDPoints.get(i).y;
+      rectPoints[i*2] = x;
+      rectPoints[i*2+1] = y;
     }
     return rectPoints;
-  }
+  } 
   
   void drawRect(){
     for(int i = 0; i < LEDPoints.size(); i++){
