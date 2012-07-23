@@ -1,4 +1,4 @@
-int numMatrices = 2;
+int numMatrices = 1;
 int wLEDs = 24 * numMatrices;
 int hLEDs = 16;
 int circleD = 12;
@@ -6,13 +6,16 @@ int padding = 5;
 int space = circleD + 2 * padding;
 int w = wLEDs*space;
 int h = hLEDs*space;
-boolean label;
 int x0Click;
 int y0Click;
 int x1Click;
 int y1Click;
 int xClick;
 int yClick;
+int exportCounter;
+PrintWriter output;
+String[] input;
+boolean label;
 boolean drawing;
 boolean click1;
 boolean lineOn;
@@ -31,6 +34,7 @@ LinkedList<LEDRect> LEDRects = new LinkedList<LEDRect>();
 void setup(){
   size(w, h+100);
   LEDPixels = new int[wLEDs][hLEDs];
+  output = createWriter("frames.txt");
 }
 
 ///////////////////////////////////////////////
@@ -70,27 +74,58 @@ void draw(){
   
   /////////////////////////Aesthetic Parts of Matrix/////////////
   //draw the matrix lines
+  strokeWeight(2);
   fill(0);
   line(0, h/2, w, h/2);
   line(0, h, w, h);
   for(int i = 1; i < numMatrices*3; i++){
     line(i*w/(3*numMatrices), 0, i*w/(3*numMatrices), h);
   }
+  strokeWeight(1);
   //draw pixel labels if labels are on
   if(label == true){
     String pixelLoc = ("x: " + mouseX/space + ", y: " + mouseY/space);
     fill(0, 0, 0, 170);
     rectMode(CORNER);
     noStroke();
-    rect(mouseX-4, mouseY-12, 80, 18);
+    rect(mouseX-4, mouseY-14, 80, 18);
     fill(0, 255, 0);
     text(pixelLoc, mouseX, mouseY);
   } 
   //draw text
-  text("C: draw circle", 20, h+20);
-  text("F: toggle fill", 20, h+40);
-  text("L: draw line", 20, h+60);
-  text("O: toggle LED on/off", 20, h+80);
+  fill(0);
+  if(circleOn){
+    fill(255, 0, 0);
+  }
+  text("C: circle", 20, h+20);
+  fill(0);
+  if(rectOn){
+    fill(255, 0, 0);
+  }
+  text("R: rectangle", 20, h+40);
+  fill(0);
+  if(lineOn){
+    fill(255, 0, 0);
+  }
+  text("L: line", 20, h+60);
+  fill(0);
+  if(fillOn){
+    fill(255, 0, 0);
+  }
+  text("F: fill ON/OFF", 120, h+20);
+  fill(0);
+  if(LEDOn){
+    fill(255, 0, 0);
+  }
+  text("O: LEDs ON/OFF", 120, h+40);
+  fill(0);
+  if(label){
+    fill(0, 0, 255);
+  }
+  text("N: labels ON/OFF", 120, h+60);
+  fill(0);
+  text("E: export frame", 250, h+20);
+  text("I: import frame", 250, h+40);
 }
 
 
@@ -107,12 +142,12 @@ void mousePressed() {
       LEDLines.add(l);
       drawing = true;
       click1 = false;
-      setShape(LEDLines.getLast().getLine());
     }
     else{
       lineOn = false;
       drawing = false;
       click1 = true;
+      setShape(LEDLines.getLast().getLine());
     }
   }
   else if(circleOn){
@@ -157,7 +192,7 @@ void mousePressed() {
 ////////////////////////////////////KEYS/////////////////////
 ///////////////////////////////////////////////////////
 void keyPressed(){
-  if(key == 'i'){
+  if(key == 'n'){
     label = !label;
   }
   
@@ -188,6 +223,12 @@ void keyPressed(){
     else if(key == 'f'){
       fillOn = ! fillOn;
     }
+    else if(key == 'e'){
+      exportFrame();
+    }
+    else if(key == 'i'){
+      importFrame();
+    }
   }
 }
 
@@ -209,6 +250,29 @@ void setShape(int [] shapePoints){
   }
 }
 
+void exportFrame(){
+  exportCounter++;
+  String[] lines = new String[hLEDs +1];
+  for(int y = 0; y < hLEDs; y++){
+    String values = "";
+    for(int x = 0; x < wLEDs-1; x++){
+        values += LEDPixels[x][y] + "\\s";
+    }
+    values += LEDPixels[wLEDs-1][y]; 
+    lines[y] = values; 
+  } 
+  saveStrings("frames" + exportCounter + ".txt", lines);
+}
+
+void importFrame(){
+  input = loadStrings("frames"+exportCounter+".txt");
+  for (int i = 0; i < hLEDs; i++) {
+    String[] elements = split(input[i], "\\s");
+    for(int j = 0; j < elements.length; j++){
+      LEDPixels[j][i] = int(elements[j]);
+    }
+  }
+}
 
 
  

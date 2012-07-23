@@ -1,0 +1,17 @@
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s1\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s1\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0\s0
+null
