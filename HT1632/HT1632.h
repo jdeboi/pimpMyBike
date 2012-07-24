@@ -97,9 +97,11 @@ class HT1632LEDMatrix : public Print {
 		  uint8_t color);
 
   //jdeboi
-  void step(uint8_t d);
-  void translate(uint8_t d, uint8_t n);
-  void translateDiagonal(uint8_t x, uint8_t y, uint8_t n);
+  void stepUp();
+  void stepDown();
+  void stepRight();
+  void stepLeft();
+  void translate(uint8_t x, uint8_t y);
   void clearLEDs();
   void setLEDs();
   uint8_t getLEDValue(uint8_t x, uint8_t y);

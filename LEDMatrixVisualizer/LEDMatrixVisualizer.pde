@@ -274,7 +274,7 @@ void setShape(int [] shapePoints){
 
 void exportFrame(){
   exportCounter++;
-  String[] lines = new String[hLEDs +1];
+  String[] lines = new String[hLEDs];
   for(int y = 0; y < hLEDs; y++){
     String values = "";
     for(int x = 0; x < wLEDs-1; x++){

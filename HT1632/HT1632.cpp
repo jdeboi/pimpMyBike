@@ -1,5 +1,6 @@
 #include "HT1632.h"
 #include "glcdfont.c"
+include "brakeLight.c"
 
 
 #define swap(a, b) { uint16_t t = a; a = b; b = t; }
@@ -390,16 +391,6 @@ void HT1632LEDMatrix::translate(uint8_t x, uint8_t y) {
     setLEDs();
 }
     
-void HT1632LEDMatrix::translateDiagonal(uint8_t x, uint8_t y, uint8_t n) {
-    //x specifies direction1 and y specifies direction2 
-    //and n specifies the step size
-    for (int i = 0; i < n; i++) {
-        step(x);
-        step(y);
-    }
-    setLEDs();
-}
-    
 void HT1632LEDMatrix::stepRight() {
     //store the last column 
     uint8_t lastCol[_height];
@@ -482,7 +473,6 @@ void HT1632LEDMatrix::stepDown() {
         LEDs[w][0]= lastRow[w];
     } 
 }    
-
     
 //////////////////////////////////////////////////////////////////////////
 
