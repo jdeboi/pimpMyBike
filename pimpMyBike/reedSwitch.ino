@@ -1,5 +1,3 @@
-
-
 void checkReed(){
   int r = digitalRead(reedPin);
   if(r == 1 && reedOn == false){

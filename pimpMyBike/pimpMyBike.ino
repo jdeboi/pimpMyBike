@@ -118,7 +118,7 @@ void setLEDShape(){
   }
   //right is on
   else if (lOn && rOn == false && stepUp == false){
-    drawLeft();
+    //never going to happen
   }
   else if(rOn && lOn && strobeOn == false){
     strobeOn = true;

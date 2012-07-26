@@ -213,7 +213,22 @@ void keyPressed(){
   if(key == 'n'){
     label = !label;
   }
-  if(drawing == false){ 
+  else if(key == 'f'){
+    fillOn = ! fillOn;
+  }
+  else if(key == 'o'){
+    LEDOn = ! LEDOn;
+  }
+  else if(key == 'e'){
+    exportFrame();
+  }
+  else if(key == 'i'){
+    importFrame();
+  }
+  else if(key == 'p'){
+    printFrame();
+  }
+  else if(drawing == false){ 
     if(key == 'l'){
       lineOn = true;
       click1 = true;
@@ -229,23 +244,7 @@ void keyPressed(){
       click1 = true;
       drawing = true;
     }
-   }
-   if(key == 'f'){
-      fillOn = ! fillOn;
-    }
-    else if(key == 'o'){
-      LEDOn = ! LEDOn;
-    }
-    else if(key == 'e'){
-      exportFrame();
-    }
-    else if(key == 'i'){
-      importFrame();
-    }
-    else if(key == 'p'){
-      printFrame();
-    }
- // }
+  }
 }
 
 ///////////////////////////////////////////////
