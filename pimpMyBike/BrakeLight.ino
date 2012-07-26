@@ -1,5 +1,5 @@
 
-int brakePixels [16*32] = {
+int brakePixels [16*24] = {
     0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 1, 1, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 
@@ -64,8 +64,8 @@ void checkBraking(){
 }
 
 void drawBrake(){
-  for(int i = 0; i < (16*32); i++){
-    matrix.drawPixel(i%width, i/32, brakePixels[i]);
+  for(int i = 0; i < (16*24); i++){
+    matrix.drawPixel(i%width, i/24, brakePixels[i]);
   }
   matrix.writeScreen();
 }

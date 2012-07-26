@@ -16,7 +16,7 @@ class LEDCircle {
   boolean fillC;
   LinkedList<LEDPoint> LEDPoints = new LinkedList<LEDPoint>();
   
-  public LEDCircle(int x, int y, boolean f, boolean o){
+  public LEDCircle(int x, int y){
     x0 = x;
     y0 = y;
     x1 = x;
@@ -25,18 +25,17 @@ class LEDCircle {
     y0P = y0 / space;
     r = 0;
     rP = 0;
-    fillC = f;
-    on = o;
   }
   
   //x and y are mouseX and mouseY
-  void setCircleCursor(int xt, int yt){
+  void setCircleCursor(int xt, int yt, boolean fillOn, boolean o){
     LEDPoints.clear();
     x1 = xt;
     y1 = yt;
+    on = o;
     r = int(sqrt((x0-xt)*(x0-xt) + (y0-yt)*(y0-yt)));
     rP = r/space;
-     
+    fillC = fillOn; 
     int f = 1 - rP;
     int ddF_x = 1;
     int ddF_y = -2 * rP;

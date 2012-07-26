@@ -21,25 +21,25 @@ class LEDRect {
 
 
 
-  public LEDRect(int x, int y, boolean f, boolean o){
+  public LEDRect(int x, int y){
     x0 = x;
     y0 = y;
     x0P = x/space;
     y0P = y/space;
-    fillR = f;
-    on = o;
   }
   
   //xt and yt are mouseX and mouseY
   //this function determines which LEDs make up the line
   //the line begins at the starting point (defined when first clicked)
   //and ends at the values passed into the function (where the cursor is)  
-  void setRectCursor(int xt, int yt){
+  void setRectCursor(int xt, int yt, boolean fillOn, boolean LEDOn){
     LEDPoints.clear();
+    fillR = fillOn;
     x1P = xt/ space;
     y1P = yt/ space;
     w = x1P - x0P;
     h = y1P - y0P;
+    on = LEDOn;
     if(w > 0){
       for(int i = 0; i <= w; i++){
         addToShape(x0P + i, y0P);

@@ -1,5 +1,5 @@
 
-int strobePixels [16*32] = 
+int strobePixels [16*24] = 
 {
     0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 1, 1, 0, 0, 0, 
@@ -52,8 +52,8 @@ int strobePixels [16*32] =
 };
 
 void drawStrobe(){
-  for(int i = 0; i < 16*32; i++){
-    matrix.drawPixel(i%width, i/32, strobePixels[i]);
+  for(int i = 0; i < 16*24; i++){
+    matrix.drawPixel(i%width, i/24, strobePixels[i]);
   }
   matrix.writeScreen();
 }

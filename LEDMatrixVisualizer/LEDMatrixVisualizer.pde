@@ -50,6 +50,7 @@ LinkedList<LEDRect> LEDRects = new LinkedList<LEDRect>();
 void setup(){
   size(w, h+100);
   LEDPixels = new int[wLEDs][hLEDs];
+  LEDPixels = new int[wLEDs][hLEDs];
   output = createWriter("frames.txt");
 }
 
@@ -75,15 +76,15 @@ void draw(){
   //set pixels if currently drawing//////////////////
   if(drawing && click1 == false){
     if(lineOn){
-      LEDLines.getLast().setLineCursor(mouseX, mouseY);
+      LEDLines.getLast().setLineCursor(mouseX, mouseY, LEDOn);
       LEDLines.getLast().drawLine();
     }
     else if(circleOn){
-      LEDCircles.getLast().setCircleCursor(mouseX, mouseY);
+      LEDCircles.getLast().setCircleCursor(mouseX, mouseY, fillOn, LEDOn);
       LEDCircles.getLast().drawCircle();
     }
     else if(rectOn){
-      LEDRects.getLast().setRectCursor(mouseX, mouseY);
+      LEDRects.getLast().setRectCursor(mouseX, mouseY, fillOn, LEDOn);
       LEDRects.getLast().drawRect();
     }
   }
@@ -142,6 +143,7 @@ void draw(){
   fill(0);
   text("E: export frame", 250, h+20);
   text("I: import frame", 250, h+40);
+  text("P: print frame", 250, h+60);
 }
 
 
@@ -154,7 +156,7 @@ void mousePressed() {
   int y = mouseY/space;
   if(lineOn){
     if(click1){
-      LEDLine l = new LEDLine(mouseX, mouseY, LEDOn);
+      LEDLine l = new LEDLine(mouseX, mouseY);
       LEDLines.add(l);
       drawing = true;
       click1 = false;
@@ -168,7 +170,7 @@ void mousePressed() {
   }
   else if(circleOn){
     if(click1){
-      LEDCircle c = new LEDCircle(mouseX, mouseY, fillOn, LEDOn);
+      LEDCircle c = new LEDCircle(mouseX, mouseY);
       LEDCircles.add(c);
       drawing = true;
       click1 = false;
@@ -182,7 +184,7 @@ void mousePressed() {
   }
   else if(rectOn){
     if(click1){
-      LEDRect r = new LEDRect(mouseX, mouseY, fillOn, LEDOn);
+      LEDRect r = new LEDRect(mouseX, mouseY);
       LEDRects.add(r);
       drawing = true;
       click1 = false;
@@ -211,17 +213,9 @@ void keyPressed(){
   if(key == 'n'){
     label = !label;
   }
-  if(drawing == false){
-    if(key == 'o'){
-      LEDOn =! LEDOn;
-    }
-    else if(key == 'l'){
+  if(drawing == false){ 
+    if(key == 'l'){
       lineOn = true;
-      click1 = true;
-      drawing = true;
-    }
-    else if(key == 'c'){
-      circleOn = true;
       click1 = true;
       drawing = true;
     }
@@ -235,8 +229,12 @@ void keyPressed(){
       click1 = true;
       drawing = true;
     }
-    else if(key == 'f'){
+   }
+   if(key == 'f'){
       fillOn = ! fillOn;
+    }
+    else if(key == 'o'){
+      LEDOn = ! LEDOn;
     }
     else if(key == 'e'){
       exportFrame();
@@ -244,7 +242,10 @@ void keyPressed(){
     else if(key == 'i'){
       importFrame();
     }
-  }
+    else if(key == 'p'){
+      printFrame();
+    }
+ // }
 }
 
 ///////////////////////////////////////////////
@@ -277,7 +278,7 @@ void exportFrame(){
   String[] lines = new String[hLEDs];
   for(int y = 0; y < hLEDs; y++){
     String values = "";
-    for(int x = 0; x < wLEDs-1; x++){
+    for(int x = 0; x < wLEDs; x++){
         values += LEDPixels[x][y] + "\\s";
     }
     values += LEDPixels[wLEDs-1][y]; 
@@ -290,7 +291,7 @@ void exportFrame(){
 
 void importFrame(){
   //specify a different text file to import other frames
-  input = loadStrings("frames.txt");
+  input = loadStrings("brakeLight.txt");
   for (int i = 0; i < hLEDs; i++) {
     String[] elements = split(input[i], "\\s");
     for(int j = 0; j < elements.length; j++){
@@ -299,7 +300,20 @@ void importFrame(){
   }
 }
 
+void printFrame(){
+  for (int i = 0; i < hLEDs; i++) {
+    for(int j = 0; j < wLEDs; j++){
+      if(i== hLEDs - 1 && j == wLEDs - 1){
+        print(LEDPixels[j][i]);
+      }
+      else{
+        print(LEDPixels[j][i] + ", ");
+      }
+    }
+    println();
+  }
+}
 
- 
- 
+
+
 

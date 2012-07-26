@@ -19,24 +19,24 @@ class LEDLine {
 
 
 
-  public LEDLine(int x, int y, boolean o){
+  public LEDLine(int x, int y){
     x0 = x;
     y0 = y;
     x0P = x/space;
     y0P = y/space;
     x1P = x/space;
     y1P = y/space;
-    on = o;
   }
   
   //xt and yt are mouseX and mouseY
   //this function determines which LEDs make up the line
   //the line begins at the starting point (defined when first clicked)
   //and ends at the values passed into the function (where the cursor is)  
-  void setLineCursor(int xt, int yt){
+  void setLineCursor(int xt, int yt, boolean o){
     LEDPoints.clear();
     x1P = xt/ space;
     y1P = yt/ space;
+    on = o;
     int x0T = x0P;
     int y0T = y0P;
     int x1T = x1P;

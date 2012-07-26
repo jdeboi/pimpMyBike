@@ -25,12 +25,13 @@ void setup() {
   matrix.fillScreen();
   delay(500);
   matrix.clearScreen();
-  arrow(LEFT); 
-  t.every(scrollTime, scroll);
+  //arrow(LEFT); 
+  //t.every(scrollTime, scroll);
+  drawBrake();
 }
 
 void loop() {
-  
+
   t.update();
 }
 
@@ -39,27 +40,30 @@ void arrow(int d){
   if(d == 1){
     matrix.drawLine(0, 0, ((matrix.width())/3)-1, (matrix.height()/2)-1, 1);
     matrix.drawLine((matrix.width()/3)-1, (matrix.height())/2, 0, matrix.height()-1, 1);
-     
+
     matrix.drawLine((matrix.width()/3), 0, (2*matrix.width()/3)-1, (matrix.height()/2)-1, 1);
     matrix.drawLine((2*matrix.width()/3)-1, (matrix.height())/2,matrix.width()/3, matrix.height()-1, 1);
-     
+
     matrix.drawLine((2*matrix.width()/3), 0, matrix.width()-1, (matrix.height()/2)-1, 1);
     matrix.drawLine(matrix.width()-1, matrix.height()/2, 2*matrix.width()/3, matrix.height()-1, 1);
     matrix.writeScreen();
   }
   //left arrow
   else if(d == 2){
-     matrix.drawLine(matrix.width()-1, 0, 2*matrix.width()/3, matrix.height()/2-1, 1);
-     matrix.drawLine(2*matrix.width()/3, matrix.height()/2, matrix.width()-1, matrix.height()-1, 1);
-     matrix.drawLine(2*matrix.width()/3-1, 0, matrix.width()/3, matrix.height()/2-1, 1);
-     matrix.drawLine(matrix.width()/3, matrix.height()/2, 2*matrix.width()/3-1, matrix.height()-1, 1);
-     matrix.drawLine(matrix.width()/3-1, 0, 0, matrix.height()/2-1, 1);
-     matrix.drawLine(0, matrix.height()/2, matrix.width()/3-1, matrix.height()-1, 1);
-     matrix.writeScreen();
+    matrix.drawLine(matrix.width()-1, 0, 2*matrix.width()/3, matrix.height()/2-1, 1);
+    matrix.drawLine(2*matrix.width()/3, matrix.height()/2, matrix.width()-1, matrix.height()-1, 1);
+    matrix.drawLine(2*matrix.width()/3-1, 0, matrix.width()/3, matrix.height()/2-1, 1);
+    matrix.drawLine(matrix.width()/3, matrix.height()/2, 2*matrix.width()/3-1, matrix.height()-1, 1);
+    matrix.drawLine(matrix.width()/3-1, 0, 0, matrix.height()/2-1, 1);
+    matrix.drawLine(0, matrix.height()/2, matrix.width()/3-1, matrix.height()-1, 1);
+    matrix.writeScreen();
   }
 }
 
 void scroll(){
-  matrix.translate(LEFT, 2);
-  matrix.writeScreen();
+  //matrix.translate(-1, 0);
+  drawBrake();
+  //matrix.writeScreen();
+  //matrix.clearScreen();
 }
+
