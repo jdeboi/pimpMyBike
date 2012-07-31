@@ -8,10 +8,4 @@ exercises - mostly incomplete. Originally intended for use in the Pimp My Bike S
 
 pimpMyBike - main Arduino sketch for the bike circuit containing LED turn indicators, brake light, speedometer, and odometer.
 
-reedSwitch - sketch I wrote to test the reedSwitch.
-
-turningIndicator
-
-turningIndicatorLEDs
-
 bike.fzz - Fritzing diagram of the bike circuit
