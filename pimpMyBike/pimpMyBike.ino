@@ -111,16 +111,20 @@ void setLEDShape(){
   //right turning indicator is on, left off
   else if (rOn && lOn == false && stepUp){
     drawRight();
+    rightIndicator = true;
   }
   //left turning indicator is on, right off
   else if (lOn && rOn == false && stepUp){
     drawLeft();
+    leftIndicator = true;
   }
   //right is on
   else if (lOn && rOn == false && stepUp == false){
     //never going to happen
   }
   else if(rOn && lOn && strobeOn == false){
+    rightIndicator = false;
+    leftIndicator = false;
     strobeOn = true;
     rOn = false;
     lOn = false;
@@ -161,7 +165,7 @@ void scroll(){ //or turning on
 }
 
 void strobe(){
-  if(strobeOn == false || rOn || lOn){
+  if(strobeOn == false || rOn || lOn || brakeOn){
   }
   else{
     blinkOn = ! blinkOn;
