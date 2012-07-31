@@ -1,6 +1,5 @@
 #include "HT1632.h"
 #include "glcdfont.c"
-include "brakeLight.c"
 
 
 #define swap(a, b) { uint16_t t = a; a = b; b = t; }
