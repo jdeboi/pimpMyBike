@@ -43,28 +43,110 @@ int [][] LEDPixels;
 LinkedList<LEDCircle> LEDCircles = new LinkedList<LEDCircle>();
 LinkedList<LEDLine> LEDLines = new LinkedList<LEDLine>();
 LinkedList<LEDRect> LEDRects = new LinkedList<LEDRect>();
+int spacing = w/numMatrices/10/14;
+int groupSpacing = spacing*3;
+int vertSpacing = 10;
+int buttonWidth = w/numMatrices/10;
+int bgColor = 220;
+int windowWidth = w;
+int windowHeight = h+buttonWidth+2*vertSpacing;
+
+//buttons
+ImageButtons exportButton;
+ImageButtons importButton;
+ImageButtons printButton;
+ImageButtons fillButton;
+ImageButtons ledButton;
+ImageButtons labelButton;
+ImageButtons circleButton;
+ImageButtons rectButton;
+ImageButtons lineButton;
 
 ///////////////////////////////////////////////
 /////////////////////////////SETUP//////////////////////////
 ///////////////////////////////////////////////////////
 void setup(){
-  size(w, h+100);
+  size(windowWidth, windowHeight);
   LEDPixels = new int[wLEDs][hLEDs];
   LEDPixels = new int[wLEDs][hLEDs];
   output = createWriter("frames.txt");
+  
+  /////////////button details//////////////////////
+  int ht = h+vertSpacing;
+  int xCoord = buttonWidth+spacing;
+  color bColor = color(201, 240, 208);
+  color hColor = color(250);
+  color pColor = color(80);
+  
+  ///////save buttons///////////////
+  //export
+  PImage b = loadImage("icons/save.png");
+  PImage r = loadImage("icons/save.png");
+  PImage d = loadImage("icons/save.png");
+  exportButton = new ImageButtons(groupSpacing, ht, buttonWidth, 
+    buttonWidth, b, r, d, bColor, hColor, pColor, "Save", false);
+  //import
+  b = loadImage("icons/open.png");
+  r = loadImage("icons/open.png");
+  d = loadImage("icons/open.png");
+  importButton = new ImageButtons(xCoord+groupSpacing, ht, 
+    buttonWidth, buttonWidth, b, r, d, bColor, hColor, pColor, "Import", false);
+  //print
+  b = loadImage("icons/print.png");
+  r = loadImage("icons/print.png");
+  d = loadImage("icons/print.png");
+  printButton = new ImageButtons(xCoord*2+groupSpacing, ht, 
+    buttonWidth, buttonWidth, b, r, d, bColor, hColor, pColor, "Print", false);
+
+  ////////on/off buttons////////////
+  bColor = color(243, 247, 192);
+  pColor = color(245, 136, 143);  
+  //LED
+  b = loadImage("icons/light.png");
+  r = loadImage("icons/light.png");
+  d = loadImage("icons/light.png");
+  ledButton = new ImageButtons(xCoord*3+groupSpacing*2, ht, 
+    buttonWidth, buttonWidth, b, r, d, bColor, hColor, pColor, "On/Off", true);
+  //fill
+  b = loadImage("icons/pencil.png");
+  r = loadImage("icons/pencil.png");
+  d = loadImage("icons/pencil.png");
+  fillButton = new ImageButtons(xCoord*4+groupSpacing*2, ht, 
+    buttonWidth, buttonWidth, b, r, d, bColor, hColor, pColor, "Fill", false);
+  //labels
+  b = loadImage("icons/tag.png");
+  r = loadImage("icons/tag.png");
+  d = loadImage("icons/tag.png");
+  labelButton = new ImageButtons(xCoord*5+groupSpacing*2, ht, 
+    buttonWidth, buttonWidth, b, r, d, bColor, hColor, pColor, "Labels", false);
+    
+  ////////draw buttons//////////////
+  bColor = color(227, 250, 247); 
+  //circle button
+  circleButton = new ImageButtons(xCoord*6+groupSpacing*3, ht, 
+    buttonWidth, buttonWidth, bColor, hColor, pColor, "Circle", false); 
+  //rect button
+  rectButton = new ImageButtons(xCoord*7+groupSpacing*3, ht, 
+    buttonWidth, buttonWidth, bColor, hColor, pColor, "Rect", false); 
+  //line button
+  lineButton = new ImageButtons(xCoord*8+groupSpacing*3, ht, 
+    buttonWidth, buttonWidth, bColor, hColor, pColor, "Line", false); 
 }
 
 ///////////////////////////////////////////////
 /////////////////////////////DRAW//////////////////////////
 ///////////////////////////////////////////////////////
 void draw(){
-  background(220);
+  background(bgColor);
   ellipseMode(CORNER);
   stroke(0);
-   
+  
+  displayButtons(); 
+  
   //write the stored pixels to the visualizer///////////
   for(int i = 0; i < wLEDs; i ++){
     for(int j = 0; j < hLEDs; j++){
+      stroke(0);
       fill(0, 0, 0);
       if(LEDPixels[i][j] == 1){
         fill(255, 0, 0);
@@ -91,6 +173,7 @@ void draw(){
   
   //Aesthetic Parts of Matrix////////////////////////
   //draw the matrix lines
+  stroke(0);
   strokeWeight(2);
   fill(0);
   line(0, h/2, w, h/2);
@@ -100,50 +183,15 @@ void draw(){
   }
   strokeWeight(1);
   //draw pixel labels if labels are on
-  if(label == true){
+  if(label == true && mouseY < h){
     String pixelLoc = ("x: " + mouseX/space + ", y: " + mouseY/space);
-    fill(0, 0, 0, 170);
+    fill(255, 255, 255, 210);
     rectMode(CORNER);
     noStroke();
     rect(mouseX-4, mouseY-14, 80, 18);
-    fill(0, 255, 0);
+    fill(0);
     text(pixelLoc, mouseX, mouseY);
   } 
-  //draw text
-  fill(0);
-  if(circleOn){
-    fill(255, 0, 0);
-  }
-  text("C: circle", 20, h+20);
-  fill(0);
-  if(rectOn){
-    fill(255, 0, 0);
-  }
-  text("R: rectangle", 20, h+40);
-  fill(0);
-  if(lineOn){
-    fill(255, 0, 0);
-  }
-  text("L: line", 20, h+60);
-  fill(0);
-  if(fillOn){
-    fill(255, 0, 0);
-  }
-  text("F: fill ON/OFF", 120, h+20);
-  fill(0);
-  if(LEDOn){
-    fill(255, 0, 0);
-  }
-  text("O: LEDs ON/OFF", 120, h+40);
-  fill(0);
-  if(label){
-    fill(0, 0, 255);
-  }
-  text("N: labels ON/OFF", 120, h+60);
-  fill(0);
-  text("E: export frame", 250, h+20);
-  text("I: import frame", 250, h+40);
-  text("P: print frame", 250, h+60);
 }
 
 
@@ -152,98 +200,62 @@ void draw(){
 /////////////////////////////MOUSE PRESSED////////////////////
 ///////////////////////////////////////////////////////
 void mousePressed() {
-  int x = mouseX/space;
-  int y = mouseY/space;
-  if(lineOn){
-    if(click1){
-      LEDLine l = new LEDLine(mouseX, mouseY);
-      LEDLines.add(l);
-      drawing = true;
-      click1 = false;
+  if(mouseY< h){
+    int x = mouseX/space;
+    int y = mouseY/space;
+    if(lineOn){
+      if(click1){
+        LEDLine l = new LEDLine(mouseX, mouseY);
+        LEDLines.add(l);
+        drawing = true;
+        click1 = false;
+      }
+      else{
+        lineOn = false;
+        drawing = false;
+        click1 = true;
+        setShape(LEDLines.getLast().getLine());
+      }
+    }
+    else if(circleOn){
+      if(click1){
+        LEDCircle c = new LEDCircle(mouseX, mouseY);
+        LEDCircles.add(c);
+        drawing = true;
+        click1 = false;
+      }
+      else{
+        circleOn = false;
+        drawing = false;
+        click1 = true;
+        setShape(LEDCircles.getLast().getCircle());
+      }
+    }
+    else if(rectOn){
+      if(click1){
+        LEDRect r = new LEDRect(mouseX, mouseY);
+        LEDRects.add(r);
+        drawing = true;
+        click1 = false;
+      }
+      else{
+        rectOn = false;
+        drawing = false;
+        click1 = true;
+        setShape(LEDRects.getLast().getRect());
+      }
     }
     else{
-      lineOn = false;
-      drawing = false;
-      click1 = true;
-      setShape(LEDLines.getLast().getLine());
-    }
-  }
-  else if(circleOn){
-    if(click1){
-      LEDCircle c = new LEDCircle(mouseX, mouseY);
-      LEDCircles.add(c);
-      drawing = true;
-      click1 = false;
-    }
-    else{
-      circleOn = false;
-      drawing = false;
-      click1 = true;
-      setShape(LEDCircles.getLast().getCircle());
-    }
-  }
-  else if(rectOn){
-    if(click1){
-      LEDRect r = new LEDRect(mouseX, mouseY);
-      LEDRects.add(r);
-      drawing = true;
-      click1 = false;
-    }
-    else{
-      rectOn = false;
-      drawing = false;
-      click1 = true;
-      setShape(LEDRects.getLast().getRect());
+      if(LEDPixels[x][y] == 1){
+        LEDPixels[x][y] = 0;
+      }
+      else{
+        LEDPixels[x][y] = 1;
+      }
     }
   }
   else{
-    if(LEDPixels[x][y] == 1){
-      LEDPixels[x][y] = 0;
-    }
-    else{
-      LEDPixels[x][y] = 1;
-    }
-  }
-}
-
-///////////////////////////////////////////////
-////////////////////////////////////KEYS/////////////////////
-///////////////////////////////////////////////////////
-void keyPressed(){
-  if(key == 'n'){
-    label = !label;
-  }
-  else if(key == 'f'){
-    fillOn = ! fillOn;
-  }
-  else if(key == 'o'){
-    LEDOn = ! LEDOn;
-  }
-  else if(key == 'e'){
-    exportFrame();
-  }
-  else if(key == 'i'){
-    importFrame();
-  }
-  else if(key == 'p'){
-    printFrame();
-  }
-  else if(drawing == false){ 
-    if(key == 'l'){
-      lineOn = true;
-      click1 = true;
-      drawing = true;
-    }
-    else if(key == 'c'){
-      circleOn = true;
-      click1 = true;
-      drawing = true;
-    }
-    else if(key == 'r'){
-      rectOn = true;
-      click1 = true;
-      drawing = true;
-    }
+    checkButtons();
   }
 }
 
@@ -269,7 +281,7 @@ void setShape(int [] shapePoints){
 }
 
 ///////////////////////////////////////////////
-///////////////////////////////IMPORT/EXPORT/////////////////////
+///////////////////////////////IMPORT/EXPORT/PRINT///////////
 ///////////////////////////////////////////////////////
 
 void exportFrame(){
@@ -312,6 +324,83 @@ void printFrame(){
     println();
   }
 }
+
+///////////////////////////////////////////////
+//////////////////////////BUTTON FUNCTIONS///////////////////
+///////////////////////////////////////////////////////
+void displayButtons(){
+  //update and draw buttons
+  exportButton.update();
+  exportButton.display();
+  importButton.update();
+  importButton.display();
+  printButton.update();
+  printButton.display();
+  fillButton.update();
+  fillButton.display();
+  ledButton.update();
+  ledButton.display();
+  labelButton.update();
+  labelButton.display();
+  circleButton.update();
+  circleButton.display();
+  rectButton.update();
+  rectButton.display();
+  lineButton.update();
+  lineButton.display();
+}
+
+void checkButtons(){
+  if(exportButton.overRect()){
+    exportFrame();
+  }
+  else if(importButton.overRect()){
+    importFrame();
+  }
+  else if(fillButton.overRect()){
+    fillButton.pressed();
+    fillOn = ! fillOn;
+    circleButton.switchFilled();
+    rectButton.switchFilled();
+  }
+  else if(ledButton.overRect()){
+    ledButton.pressed();
+    LEDOn = ! LEDOn;
+    circleButton.switchOn();
+    rectButton.switchOn();
+    lineButton.switchOn();
+  }
+  else if(printButton.overRect()){
+    printFrame();
+  }
+  else if(labelButton.overRect()){
+    labelButton.pressed();
+    label = !label;
+  }
+  if(drawing == false){ 
+    if(lineButton.overRect()){
+      lineOn = true;
+      click1 = true;
+      drawing = true;
+      lineButton.pressed();
+    }
+    else if(circleButton.overRect()){
+      circleOn = true;
+      click1 = true;
+      drawing = true;
+      circleButton.pressed();
+    }
+    else if(rectButton.overRect()){
+      rectOn = true;
+      click1 = true;
+      drawing = true;
+      rectButton.pressed();
+    }
+  }
+}
+
+
+
 
 
 

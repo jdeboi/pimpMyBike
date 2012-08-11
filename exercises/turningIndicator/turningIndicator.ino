@@ -1,5 +1,7 @@
-const int buttonPin = 2;     // the number of the pushbutton pin
-const int ledPin =  13;      // the number of the LED pin
+//const int buttonPin = A3;     // the number of the pushbutton pin
+//const int ledPin =  A5;      // the number of the LED pin
+const int buttonPin = A2;     // the number of the pushbutton pin
+const int ledPin =  A4;      // the number of the LED pin
 boolean on = false;
 boolean pressed = false;
 

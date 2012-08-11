@@ -1,10 +1,10 @@
 #include "HT1632.h"
 #include "Timer.h"
 
-#define DATA 2
-#define WR   3
-#define CS   4
-#define CS2  5
+#define DATA 11
+#define WR   12
+#define CS   10
+//#define CS2  5
 
 #define RIGHT 1
 #define LEFT 2

@@ -42,18 +42,22 @@ void checkRightTurning(){
   if(right == HIGH && rightOld == LOW){
       rOn =! rOn;
       if(rOn && lOn){
+        digitalWrite(turnRLED, HIGH);
         stepUp = true;
         state = 4;
       }
       else if(rOn && lOn == false){
+        digitalWrite(turnRLED, HIGH);
         stepUp = true;
         state = 1;
       }
       else if(rOn == false && lOn){
+        digitalWrite(turnRLED, LOW);
         stepUp = false;
         //not going to happen because reset rOn and lOn when they're both HIGH
       }
       else if(rOn == false && lOn == false){
+        digitalWrite(turnRLED, LOW);
         stepUp = false;
         state = 0;
       }
@@ -67,8 +71,8 @@ void checkLeftTurning(){
   if(left == HIGH && leftOld == LOW){
      lOn =! lOn;
      if(rOn && lOn){
-        stepUp = true;
-        state = 4;
+       stepUp = true;
+       state = 4;
       }
       else if(rOn && lOn == false){
         stepUp = false;
