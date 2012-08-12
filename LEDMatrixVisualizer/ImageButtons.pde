@@ -66,6 +66,10 @@ class ImageButtons
     pressed =! pressed;
   }
   
+  void reset(){
+    pressed = false;
+  }
+  
   void over() 
   {
     if( overRect() ) {

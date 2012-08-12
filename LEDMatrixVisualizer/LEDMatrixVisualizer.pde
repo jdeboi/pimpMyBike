@@ -214,6 +214,7 @@ void mousePressed() {
         lineOn = false;
         drawing = false;
         click1 = true;
+        lineButton.pressed();
         setShape(LEDLines.getLast().getLine());
       }
     }
@@ -228,6 +229,7 @@ void mousePressed() {
         circleOn = false;
         drawing = false;
         click1 = true;
+        circleButton.pressed();
         setShape(LEDCircles.getLast().getCircle());
       }
     }
@@ -242,6 +244,7 @@ void mousePressed() {
         rectOn = false;
         drawing = false;
         click1 = true;
+        rectButton.pressed();
         setShape(LEDRects.getLast().getRect());
       }
     }
@@ -380,21 +383,30 @@ void checkButtons(){
   if(drawing == false){ 
     if(lineButton.overRect()){
       lineOn = true;
+      circleOn = false;
+      rectOn = false;
       click1 = true;
-      drawing = true;
       lineButton.pressed();
+      rectButton.reset();
+      circleButton.reset();
     }
     else if(circleButton.overRect()){
       circleOn = true;
+      lineOn = false;
+      rectOn = false;
       click1 = true;
-      drawing = true;
       circleButton.pressed();
+      rectButton.reset();
+      lineButton.reset();
     }
     else if(rectButton.overRect()){
       rectOn = true;
+      circleOn = false;
+      lineOn = false;
       click1 = true;
-      drawing = true;
       rectButton.pressed();
+      lineButton.reset();
+      circleButton.reset();
     }
   }
 }

@@ -13,7 +13,7 @@ class LEDRect {
   int w;
   int h;
   //"on" stores whether or not the LEDs are lit up
-  boolean on;
+  boolean state;
   boolean fillR;
   //this linked list of points keeps track of all locations of
   //LEDs comprising this line
@@ -32,14 +32,14 @@ class LEDRect {
   //this function determines which LEDs make up the line
   //the line begins at the starting point (defined when first clicked)
   //and ends at the values passed into the function (where the cursor is)  
-  void setRectCursor(int xt, int yt, boolean fillOn, boolean LEDOn){
+  void setRectCursor(int xt, int yt, boolean f, boolean l){
     LEDPoints.clear();
-    fillR = fillOn;
+    fillR = f;
     x1P = xt/ space;
     y1P = yt/ space;
     w = x1P - x0P;
     h = y1P - y0P;
-    on = LEDOn;
+    state = l;
     if(w > 0){
       for(int i = 0; i <= w; i++){
         addToShape(x0P + i, y0P);
@@ -70,16 +70,39 @@ class LEDRect {
   }
 
   void setFill(){
-    for (int i = x0P; i < x0P+w; i++) {
-      for (int j = y0P; j < y0P+h; j++) {
-        addToShape(i, j);
+    if(w > 0 && h > 0){
+      for (int i = x0P; i < x1P; i++) {
+        for (int j = y0P; j < y1P; j++) {
+          addToShape(i, j);
+        }
+      }
+    }
+    else if(w > 0 && h < 0){
+      for (int i = x0P; i < x1P; i++) {
+        for (int j = y1P; j < y0P; j++) {
+          addToShape(i, j);
+        }
+      }
+    }
+    else if(w < 0 && h > 0){
+      for (int i = x1P; i < x0P; i++) {
+        for (int j = y0P; j < y1P; j++) {
+          addToShape(i, j);
+        }
+      }
+    }
+    else if(w < 0 && h < 0){
+      for (int i = x1P; i < x0P; i++) {
+        for (int j = y1P; j < y0P; j++) {
+          addToShape(i, j);
+        }
       }
     }
   }
   
   void addToShape(int x, int y){
     if(x >= 0 && x < wLEDs && y >= 0 && y < hLEDs){
-      LEDPoint p = new LEDPoint(x, y, on);
+      LEDPoint p = new LEDPoint(x, y, state);
       LEDPoints.add(p);
     }
   }
