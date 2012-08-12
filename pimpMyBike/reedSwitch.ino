@@ -11,14 +11,34 @@ void checkReed(){
   }
 }
 
-void getSpeed(){
-  speedometer = wheelC/reedTimeDelta;
-  MPH = speedometer * 22.369; 
-  KPH = speedometer * 36; 
+String getSpeedString(){
+  speedometer = wheelC/reedTimeDelta; 
+  if(metric){
+    KPH = speedometer * 36;
+    char tmp[25] = "KPH: ";
+    dtostrf(KPH,1,2, &tmp[12]);
+    return tmp;
+  }
+  else{
+    MPH = speedometer * 22.369;
+    char tmp[25] = "KPH: ";
+    dtostrf(MPH,1,2, &tmp[12]);
+    return tmp;
+  } 
 }
 
-void getDistance(){
+String getDistanceString(){
   odometer = wheelC*circleNum;
-  miles = odometer / 160934.4;
-  kilometers = odometer / 100000;
+  if(metric){
+    kilometers = odometer / 100000;
+    char tmp[25] = "Distance: ";
+    dtostrf(kilometers,1,2, &tmp[12]);
+    return tmp; 
+  }
+  else{
+    miles = odometer / 160934.4;
+    char tmp[25] = "Distance: ";
+    dtostrf(miles,1,2, &tmp[12]);
+    return tmp; 
+  }
 }

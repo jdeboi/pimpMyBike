@@ -38,7 +38,7 @@ int leftArrow [16*24] = {
 
 
 void checkRightTurning(){
-  right = digitalRead(turnRpin);
+  right = digitalRead(turnRPin);
   if(right == HIGH && rightOld == LOW){
       rOn =! rOn;
       if(rOn && lOn){
@@ -67,7 +67,7 @@ void checkRightTurning(){
 }
 
 void checkLeftTurning(){
-  left = digitalRead(turnLpin);
+  left = digitalRead(turnLPin);
   if(left == HIGH && leftOld == LOW){
      lOn =! lOn;
      if(rOn && lOn){

@@ -1,4 +1,5 @@
 // include the library code:
+#include<stdlib.h>
 #include <LiquidCrystal.h>
 #include <Wire.h>
 #include "Timer.h"
@@ -39,6 +40,7 @@ float KPH = 0;
 int reedTime = 0;
 int reedTimeDelta = 0;
 boolean reedOn = false;
+boolean metric = true;
 ///////Turning Indicator Buttons////////
 boolean rOn = false;
 boolean lOn = false;
@@ -50,6 +52,10 @@ int left;
 int rightOld;
 int leftOld;
 int type;
+const int turnRPin = A3;
+const int turnLPin = A2;
+const int turnRLED = A5;
+const int turnLLED = A4;
 ///////Turning Indicator Matrix///////////
 // use this line for single matrix
 int numMatrices = 1;
@@ -57,10 +63,6 @@ int height = 16;
 int width = numMatrices * 32;
 int stepSize = 2;
 HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
-int turnRpin = A3;
-int turnLpin = A2;
-int turnRLED = A5;
-int turnLLED = A4;
 
 int state = 0;
 int blinkTime = 1000;
@@ -80,17 +82,23 @@ int LCDButton;
 ////////////////////////////SETUP////////////////////////////
 ////////////////////////////////////////////////////////
 void setup() {
-  lcd.begin(16, 2); // set up the LCD's number of columns and rows:
-  reedTime = millis();
-  //pinMode();
+  // set up the LCD's number of rows and columns:
+  lcd.begin(16, 2);
+  lcd.print("Speed Test");
+  lcd.setCursor(0,1);
+  lcd.print(" Distance Test");
+  
+  
   matrix.begin(HT1632_COMMON_16NMOS);  
   matrix.fillScreen();
   delay(500);
-  matrix.clearScreen();
-  matrix.clearLEDs();
+  blankScreen();
+  
   scrollTimer.every(scrollTime, scroll);
   strobeTimer.every(strobeTime, strobe);
-  blankScreen();
+  
+  reedTime = millis();
+  
   pinMode(turnRPin, INPUT); 
   pinMode(turnRLED, OUTPUT);   
   pinMode(turnLPin, INPUT);
@@ -105,8 +113,6 @@ void loop() {
   checkLeftTurning();
   checkBraking();
   checkReed();
-  getSpeed();
-  getDistance();
   printLCD();
   scrollTimer.update();
   strobeTimer.update();
@@ -114,10 +120,11 @@ void loop() {
 
 
 void printLCD(){
-  lcd.setCursor(1, 0);      // set the cursor to column 0, line 1 (note: line 1 is the second row, since counting begins with 0):
-  //lcd.print("MPH: " + speedometer); // print the number of seconds since reset:
+  //column, line
+  lcd.setCursor(1, 0);      
+  lcd.print(getSpeedString());
   lcd.setCursor(1, 1); 
-  //lcd.print("MPH: " + miles);
+  lcd.print(getDistanceString());
 }
 
 void setLEDShape(){
