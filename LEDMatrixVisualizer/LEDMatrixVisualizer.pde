@@ -13,8 +13,11 @@ All of the shapes are stored in linked lists.  At some point, it'd be nice to wr
 functions to animate individal shape objects.
 */
 
-//change this number if you're using more than one matrix
+//////////modify these variables///////////
 int numMatrices = 1;
+String exportFile = "frames.txt";
+String importFile = "brakeLight.txt";
+//////////////////////////////////////////
 int wLEDs = 24 * numMatrices;
 int hLEDs = 16;
 int circleD = 12;
@@ -22,16 +25,9 @@ int padding = 5;
 int space = circleD + 2 * padding;
 int w = wLEDs*space;
 int h = hLEDs*space;
-int x0Click;
-int y0Click;
-int x1Click;
-int y1Click;
-int xClick;
-int yClick;
 int exportCounter;
 PrintWriter output;
 String[] input;
-boolean label;
 boolean drawing;
 boolean click1;
 boolean lineOn;
@@ -39,6 +35,7 @@ boolean circleOn;
 boolean rectOn;
 boolean fillOn = false;
 boolean LEDOn = true;
+boolean label;
 int [][] LEDPixels;
 LinkedList<LEDCircle> LEDCircles = new LinkedList<LEDCircle>();
 LinkedList<LEDLine> LEDLines = new LinkedList<LEDLine>();
@@ -263,6 +260,17 @@ void mousePressed() {
 }
 
 ///////////////////////////////////////////////
+//////////////////////////////KEY PRESSED///////////////////////
+///////////////////////////////////////////////////////
+void keyPressed(){
+  if(drawing == false){
+    if(key == 'c'){
+      clearAll();
+    }
+  }
+}
+
+///////////////////////////////////////////////
 //////////////////////////////SET FUNCTIONS/////////////////////
 ///////////////////////////////////////////////////////
 
@@ -300,12 +308,14 @@ void exportFrame(){
   } 
   //To create new files instead of overwriting use the line below
   //saveStrings("frames" + exportCounter + ".txt", lines);
-  saveStrings("frames.txt", lines);
+  saveStrings(exportFile, lines);
+  println("Matrix design saved" + exportFile);
+  
 }
 
 void importFrame(){
   //specify a different text file to import other frames
-  input = loadStrings("brakeLight.txt");
+  input = loadStrings(importFile);
   for (int i = 0; i < hLEDs; i++) {
     String[] elements = split(input[i], "\\s");
     for(int j = 0; j < elements.length; j++){
@@ -407,6 +417,20 @@ void checkButtons(){
       rectButton.pressed();
       lineButton.reset();
       circleButton.reset();
+    }
+  }
+}
+
+void clearAll(){
+  lineButton.reset();
+  circleButton.reset();
+  rectButton.reset();
+  lineOn = false;
+  circleOn = false;
+  rectOn = false;
+  for(int i=0; i < wLEDs; i++){
+    for(int j=0; j< hLEDs; j++){
+      LEDPixels[i][j] = 0;
     }
   }
 }
