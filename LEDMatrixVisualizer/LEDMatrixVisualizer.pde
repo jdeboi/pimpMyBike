@@ -5,7 +5,7 @@ Shout out to Adafruit Industries
 
 This LED Visualizer makes it easy to design patterns for use with the 
 16x24 Red LED Matrix Panel - Chainable HT1632C Driver, which is produced 
-by Adafruit Industries and available here: 
+by Adafruit Industries and is available here: 
 https://www.adafruit.com/products/555.
 
 Once your design is complete, you can export the pixel values to a text 
@@ -15,7 +15,7 @@ The print button allows you to generate a bitmap of the LED values (either 1 or
 values into the brake light or turning indicator LED pixel arrays.
 
 All of the shapes are stored in linked lists.  At some point, it'd be nice 
-to write functions to animate individal shape objects.
+to write functions to animate individual shape objects.
 */
 
 //////////modify these variables///////////
