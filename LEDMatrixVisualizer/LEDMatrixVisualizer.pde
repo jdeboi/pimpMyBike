@@ -20,6 +20,13 @@ to write functions to animate individual shape objects.
 
 //////////modify these variables///////////
 int numMatrices = 1;
+/*
+Make sure that the import file name is different from the export file 
+before the sketch is run; otherwise, the former will be wiped in the setup().
+To create new export files while the sketch is running (instead of overwriting
+the same file each time), follow the instructions below in the exportFrame()
+function.
+*/
 String exportFile = "frames.txt";
 String importFile = "brakeLight.txt";
 //////////////////////////////////////////
