@@ -1,7 +1,7 @@
 class ImageButtons
 {
   int x, y;
-  int w, h;
+  int wButton, hButton;
   color basecolor, highlightcolor, pressedcolor;
   color currentcolor;
   boolean over = false;
@@ -13,14 +13,16 @@ class ImageButtons
   String label;
   boolean filled = false;
   boolean LEDState = true;
+  int xTextPad = 3;
+  int yTextPad;
 
   ImageButtons(int ix, int iy, int iw, int ih, PImage ibase, PImage iroll, 
      PImage idown, color icolor, color ihighlight, color ipressed, String l, boolean init) 
   {
     x = ix;
     y = iy;
-    w = iw;
-    h = ih;
+    wButton = iw;
+    hButton = ih;
     base = ibase;
     roll = iroll;
     down = idown;
@@ -32,6 +34,7 @@ class ImageButtons
     label = l;
     //init determines whether the button is initially pressed or not
     pressed = init;
+    yTextPad = hButton -4;
   }
   
   ImageButtons(int ix, int iy, int iw, int ih, color icolor, color ihighlight, 
@@ -39,14 +42,15 @@ class ImageButtons
   {
     x = ix;
     y = iy;
-    w = iw;
-    h = ih;
+    wButton = iw;
+    hButton = ih;
     basecolor = icolor;
     highlightcolor = ihighlight;
     pressedcolor = ipressed;
     currentcolor = basecolor;
     label = l;
     pressed = init;
+    yTextPad = hButton -4;
   }
   
   void update() 
@@ -80,8 +84,8 @@ class ImageButtons
   }
   
   boolean overRect() {
-    if (mouseX >= x && mouseX <= x+w && 
-      mouseY >= y && mouseY <= y+h) {
+    if (mouseX >= x && mouseX <= x+wButton && 
+      mouseY >= y && mouseY <= y+hButton) {
       return true;
     } 
     else {
@@ -93,32 +97,36 @@ class ImageButtons
   {
     noStroke();
     fill(currentcolor);
-    rect(x, y, w, h);
+    rect(x, y, wButton, hButton);
     stroke(0);
-    
+    textSize(12);
     
     if(label == "Circle"){
       setShapeColors();
-      ellipse(x+5, y+5, w/2, w/2);
+      ellipse(x+5, y+8, wButton/2, wButton/2);
       fill(0);
-      text(label, x+4, y+buttonWidth*.92);
+      text(label, x+xTextPad, y+yTextPad);
     }
     else if(label == "Rect"){
       setShapeColors();
-      rect(x+5, y+5, w/2, w/2);
+      rect(x+5, y+8, wButton/2, wButton/2);
       fill(0);
-      text(label, x+4, y+buttonWidth*.92);
+      text(label, x+xTextPad, y+yTextPad);
     }
     else if(label == "Line"){
       setShapeColors();
-      line(x+10, y+10, x+w-10, y+30);
+      line(x+10, y+10, x+wButton-10, y+30);
       fill(0);
-      text(label, x+4, y+buttonWidth*.92);
+      text(label, x+xTextPad, y+yTextPad);
+    }
+    else if(label == "Clear"){
+      fill(0);
+      text(label, x+xTextPad, y+yTextPad);
     }
     else{
       image(currentimage, x+3, y+3);
       fill(0);
-      text(label, x+4, y+buttonWidth*.92);
+      text(label, x+xTextPad, y+yTextPad);
     }
   }
   

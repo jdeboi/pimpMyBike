@@ -5,12 +5,17 @@ Shout out to Adafruit Industries
 
 This LED Visualizer makes it easy to design patterns for use with the 
 16x24 Red LED Matrix Panel - Chainable HT1632C Driver, which is produced 
-by Adafruit Industries and available here: https://www.adafruit.com/products/555.
+by Adafruit Industries and available here: 
+https://www.adafruit.com/products/555.
 
-Once your design is complete, you can export the pixel values to a text file.
+Once your design is complete, you can export the pixel values to a text 
+file or import previous designs (edit the file paths at the top of the sketch).  
+The print button allows you to generate a bitmap of the LED values (either 1 or 
+0). If you're using the Arduino bike circuit code, you can copy/paste the LED 
+values into the brake light or turning indicator LED pixel arrays.
 
-All of the shapes are stored in linked lists.  At some point, it'd be nice to write
-functions to animate individal shape objects.
+All of the shapes are stored in linked lists.  At some point, it'd be nice 
+to write functions to animate individal shape objects.
 */
 
 //////////modify these variables///////////
@@ -20,8 +25,8 @@ String importFile = "brakeLight.txt";
 //////////////////////////////////////////
 int wLEDs = 24 * numMatrices;
 int hLEDs = 16;
-int circleD = 12;
-int padding = 5;
+int circleD = 14;
+int padding = 3;
 int space = circleD + 2 * padding;
 int w = wLEDs*space;
 int h = hLEDs*space;
@@ -40,13 +45,14 @@ int [][] LEDPixels;
 LinkedList<LEDCircle> LEDCircles = new LinkedList<LEDCircle>();
 LinkedList<LEDLine> LEDLines = new LinkedList<LEDLine>();
 LinkedList<LEDRect> LEDRects = new LinkedList<LEDRect>();
-int spacing = w/numMatrices/10/14;
+int spacing = w/numMatrices/11/17;
 int groupSpacing = spacing*3;
 int vertSpacing = 10;
-int buttonWidth = w/numMatrices/10;
+int buttonWidth = w/numMatrices/11;
+int buttonHeight = buttonWidth +10;
 int bgColor = 220;
 int windowWidth = w;
-int windowHeight = h+buttonWidth+2*vertSpacing;
+int windowHeight = h+buttonWidth+3*vertSpacing;
 
 //buttons
 ImageButtons exportButton;
@@ -58,6 +64,7 @@ ImageButtons labelButton;
 ImageButtons circleButton;
 ImageButtons rectButton;
 ImageButtons lineButton;
+ImageButtons clearButton;
 
 ///////////////////////////////////////////////
 /////////////////////////////SETUP//////////////////////////
@@ -72,8 +79,8 @@ void setup(){
   int ht = h+vertSpacing;
   int xCoord = buttonWidth+spacing;
   color bColor = color(201, 240, 208);
-  color hColor = color(250);
-  color pColor = color(80);
+  color hColor = color(201, 240, 208);
+  color pColor = color(181, 220, 188);
   
   ///////save buttons///////////////
   //export
@@ -81,53 +88,62 @@ void setup(){
   PImage r = loadImage("icons/save.png");
   PImage d = loadImage("icons/save.png");
   exportButton = new ImageButtons(groupSpacing, ht, buttonWidth, 
-    buttonWidth, b, r, d, bColor, hColor, pColor, "Save", false);
+    buttonHeight, b, r, d, bColor, hColor, pColor, " Save", false);
   //import
   b = loadImage("icons/open.png");
   r = loadImage("icons/open.png");
   d = loadImage("icons/open.png");
   importButton = new ImageButtons(xCoord+groupSpacing, ht, 
-    buttonWidth, buttonWidth, b, r, d, bColor, hColor, pColor, "Import", false);
+    buttonWidth, buttonHeight, b, r, d, bColor, hColor, pColor, "Import", false);
   //print
   b = loadImage("icons/print.png");
   r = loadImage("icons/print.png");
   d = loadImage("icons/print.png");
   printButton = new ImageButtons(xCoord*2+groupSpacing, ht, 
-    buttonWidth, buttonWidth, b, r, d, bColor, hColor, pColor, "Print", false);
+    buttonWidth, buttonHeight, b, r, d, bColor, hColor, pColor, " Print", false);
 
   ////////on/off buttons////////////
   bColor = color(243, 247, 192);
-  pColor = color(245, 136, 143);  
+  hColor = color(243, 247, 192);
+  pColor = color(223, 227, 172);  
   //LED
   b = loadImage("icons/light.png");
   r = loadImage("icons/light.png");
   d = loadImage("icons/light.png");
   ledButton = new ImageButtons(xCoord*3+groupSpacing*2, ht, 
-    buttonWidth, buttonWidth, b, r, d, bColor, hColor, pColor, "On/Off", true);
+    buttonWidth, buttonHeight, b, r, d, bColor, hColor, pColor, "On/Off", true);
   //fill
   b = loadImage("icons/pencil.png");
   r = loadImage("icons/pencil.png");
   d = loadImage("icons/pencil.png");
   fillButton = new ImageButtons(xCoord*4+groupSpacing*2, ht, 
-    buttonWidth, buttonWidth, b, r, d, bColor, hColor, pColor, "Fill", false);
+    buttonWidth, buttonHeight, b, r, d, bColor, hColor, pColor, "  Fill", false);
   //labels
   b = loadImage("icons/tag.png");
   r = loadImage("icons/tag.png");
   d = loadImage("icons/tag.png");
   labelButton = new ImageButtons(xCoord*5+groupSpacing*2, ht, 
-    buttonWidth, buttonWidth, b, r, d, bColor, hColor, pColor, "Labels", false);
+    buttonWidth, buttonHeight, b, r, d, bColor, hColor, pColor, "Labels", false);
     
   ////////draw buttons//////////////
   bColor = color(227, 250, 247); 
+  hColor = color(227, 250, 247);
+  pColor = color(207, 230, 227); 
   //circle button
   circleButton = new ImageButtons(xCoord*6+groupSpacing*3, ht, 
-    buttonWidth, buttonWidth, bColor, hColor, pColor, "Circle", false); 
+    buttonWidth, buttonHeight, bColor, hColor, pColor, "Circle", false); 
   //rect button
   rectButton = new ImageButtons(xCoord*7+groupSpacing*3, ht, 
-    buttonWidth, buttonWidth, bColor, hColor, pColor, "Rect", false); 
+    buttonWidth, buttonHeight, bColor, hColor, pColor, "Rect", false); 
   //line button
   lineButton = new ImageButtons(xCoord*8+groupSpacing*3, ht, 
-    buttonWidth, buttonWidth, bColor, hColor, pColor, "Line", false); 
+    buttonWidth, buttonHeight, bColor, hColor, pColor, "Line", false); 
+  //clear button
+  bColor = color(240); 
+  hColor = color(240); 
+  pColor = color(220); 
+  clearButton = new ImageButtons(xCoord*9+groupSpacing*4, ht, 
+    buttonWidth, buttonHeight, bColor, hColor, pColor, "Clear", false); 
 }
 
 ///////////////////////////////////////////////
@@ -309,7 +325,7 @@ void exportFrame(){
   //To create new files instead of overwriting use the line below
   //saveStrings("frames" + exportCounter + ".txt", lines);
   saveStrings(exportFile, lines);
-  println("Matrix design saved" + exportFile);
+  println("Matrix design saved: " + exportFile);
   
 }
 
@@ -361,16 +377,12 @@ void displayButtons(){
   rectButton.display();
   lineButton.update();
   lineButton.display();
+  clearButton.update();
+  clearButton.display();
 }
 
 void checkButtons(){
-  if(exportButton.overRect()){
-    exportFrame();
-  }
-  else if(importButton.overRect()){
-    importFrame();
-  }
-  else if(fillButton.overRect()){
+  if(fillButton.overRect()){
     fillButton.pressed();
     fillOn = ! fillOn;
     circleButton.switchFilled();
@@ -383,15 +395,24 @@ void checkButtons(){
     rectButton.switchOn();
     lineButton.switchOn();
   }
-  else if(printButton.overRect()){
-    printFrame();
-  }
   else if(labelButton.overRect()){
     labelButton.pressed();
     label = !label;
   }
   if(drawing == false){ 
-    if(lineButton.overRect()){
+    if(exportButton.overRect()){
+      exportFrame();
+    }
+    else if(importButton.overRect()){
+      importFrame();
+    }
+    else if(printButton.overRect()){
+      printFrame();
+    }
+    else if(clearButton.overRect()){
+      clearAll();
+    }
+    else if(lineButton.overRect()){
       lineOn = true;
       circleOn = false;
       rectOn = false;
