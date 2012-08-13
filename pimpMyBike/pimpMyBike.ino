@@ -4,6 +4,7 @@
 #include <Wire.h>
 #include "Timer.h"
 #include "HT1632.h"
+
 #define DATA 11
 #define WR   12
 #define CS   10
@@ -158,13 +159,14 @@ void setLEDShape(){
     drawStrobe();
   }
   else if(rOn && lOn && strobeOn){
+    rightIndicator = false;
+    leftIndicator = false;
     strobeOn = false;
     rOn = false;
     lOn = false;
     digitalWrite(turnRLED, LOW);
     digitalWrite(turnLLED, LOW);
     blankScreen();
-    
   }
   
   //left and right turning indicators are off
@@ -184,12 +186,15 @@ void blankScreen(){
 ////////////////////////////////
 ////////TIMER FUNCTIONS///////////
 ////////////////////////////////
-void scroll(){ //or turning on
-  if(type == 1){
+void scroll(){
+  if(brakeOn){
+    return;
+  }
+  else if(rightIndicator){
     matrix.translate(stepSize, 0);
     matrix.writeScreen();
   }
-  else if(type == 2){
+  else if(leftIndicator){
     matrix.translate(-1*stepSize, 0);
     matrix.writeScreen();
   }
@@ -201,10 +206,10 @@ void strobe(){
   }
   else{
     blinkOn = ! blinkOn;
-    if(strobeOn && blinkOn){
+    if(blinkOn){
       drawStrobe();
     }
-    else if(strobeOn && blinkOn == false){
+    else{
       matrix.clearScreen();
     }
   }

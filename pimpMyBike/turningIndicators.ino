@@ -87,8 +87,8 @@ void checkLeftTurning(){
         state = 0;
       }
    }
-   setLEDShape(); 
    leftOld = left;
+   setLEDShape(); 
 }
 
 void drawRight(){

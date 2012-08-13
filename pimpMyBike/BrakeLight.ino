@@ -26,6 +26,7 @@ void checkBraking(){
   }
   else if (brakeV == LOW && brakeOld == HIGH){
     brakeOn = false;
+    blankScreen();
     setLEDShape();
   }
   brakeOld = brakeV;
