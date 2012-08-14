@@ -112,7 +112,7 @@ void setup() {
 void loop() {
   checkRightTurning();
   checkLeftTurning();
-  checkBraking();
+  //checkBraking();
   checkReed();
   printLCD();
   scrollTimer.update();
