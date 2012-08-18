@@ -99,6 +99,7 @@ void drawRight(){
  for(int i = 0; i < 16; i++) {
     for(int j = 0; j< 24; j++) {
       matrix.drawPixel(j, i, (rightArrow[j+i*24]-'0'));
+      LEDs[j][i] = rightArrow[j+i*24];
     }    
  }
  matrix.writeScreen();
@@ -108,9 +109,12 @@ void drawLeft(){
   for(int i = 0; i < 16; i++) {
     for(int j = 0; j< 24; j++) {
       matrix.drawPixel(j, i, (leftArrow[j+i*24]-'0'));
+      //LEDs[j+i*24] = leftArrow[j+i*24];
+      LEDs[j][i] = leftArrow[j+i*24];
     }    
  }
  matrix.writeScreen();
 }
+
 
 

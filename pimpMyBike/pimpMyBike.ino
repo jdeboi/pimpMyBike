@@ -13,6 +13,9 @@
 #define GREENLITE 6
 #define BLUELITE 9
 
+////////////////////////////////////////////////////////////////////////////
+/////////////////////////VARIABLES////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 ///////Brake Switch/////////////
 int brakeV; 
 int brakeOld;
@@ -56,17 +59,31 @@ int height = 16;
 int width = numMatrices * 32;
 int numLEDs = height*width;
 int stepSize = 2;
-HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
-
-
-/*
-//////////Timer Variables/////////////////
-int blinkTime = 1000;
-Timer scrollTimer;
-int scrollTime = 130;
-Timer strobeTimer;
-int strobeTime = 500;
+/*char LEDs [] =
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000"
+  "000000000000000000000000";
 */
+char LEDs [24][16];
+int firstRow[24];
+int lastRow[24];
+int firstCol[24];
+int lastCol[24];
+  
+HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
 
 
 ///////LCD//////////////////////
@@ -75,11 +92,12 @@ LiquidCrystal lcd(2, 3, A0, 8, 7, 4);
 int LCDButton;
 int brightness = 100;
 
-////////////////////////////////////////////////////////
-////////////////////////////SETUP////////////////////////////
-////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+//////////////////////////SETUP/////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 void setup() {
   // set up the LCD's number of rows and columns:
+  Serial.begin(9600);
   lcd.begin(16, 2);
   setBacklight(130, 222, 219);
   lcd.print("Speed Test");
@@ -95,7 +113,9 @@ void setup() {
   pinMode(turnRPin, INPUT); 
   pinMode(turnRLED, OUTPUT);   
   pinMode(turnLPin, INPUT);
-  pinMode(turnLLED, OUTPUT); 
+  pinMode(turnLLED, OUTPUT);
+  drawRight(); 
+  delay(500);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -103,19 +123,31 @@ void setup() {
 ////////////////////////////////////////////////////////////////////////////
 void loop() {
   //checkBraking();
-  checkTurning();
-  setTurning();
-  //don't know why setStrobe() isn't working
+  //checkTurning();
+  //setTurning();
+  //translate(1,0);
+  drawLeft();
+  delay(500);
+  matrix.clearScreen();
+  delay(500);
+  //translate(1,0);
+  drawBrake();
+  delay(500);
+  /*
+  *To do- figure out why drawStrobe() causes the entire
+  *sketch to freeze- stack overflow?
+  *drawRight() is exactly the same and works fine
+  *(if you replace drawStrobe() with drawRight()).
+  *I have to talk to someone who knows more about comp sci
+  *or electronics than I do.
+  *The sketch also freezes when I try to use timers
+  *even though I've literally copy/pasted code from a sketch
+  *specifically designed to scroll LEDs.  I'm convinced that it has
+  *to do with memory/ hardware, but I dunno.
+  */
   //setStrobe();
   //checkReed();
   //printLCD();
-  //scrollTimer.update();
-  //strobeTimer.update();
-}
-
-void blankScreen(){
-  matrix.clearScreen();
-  matrix.clearLEDs();
 }
 
 

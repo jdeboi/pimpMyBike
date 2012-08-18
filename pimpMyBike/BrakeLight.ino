@@ -34,6 +34,8 @@ void checkBraking(){
 void drawBrake(){
   for(int i = 0; i < numLEDs; i++){
     matrix.drawPixel(i%width, i/24, (brakePixels[i]-'0'));
+    //LEDs[i] = brakePixels[i];
+    LEDs[i%width][i/24] = brakePixels[i];
   }
   matrix.writeScreen();
 }
