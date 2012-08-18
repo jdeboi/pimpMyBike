@@ -107,7 +107,6 @@ void drawLeft(){
   for(int i = 0; i < 16; i++) {
     for(int j = 0; j<24; j++) {
       matrix.drawPixel(j, i, (leftArrow[j+i*24]-'0'));
-      
     }    
  }
  matrix.writeScreen();

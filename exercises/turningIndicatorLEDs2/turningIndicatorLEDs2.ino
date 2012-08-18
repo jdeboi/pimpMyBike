@@ -12,24 +12,41 @@
 #define DOWN 4
 
 char leftArrow [] = 
-  "000000000001100000000000"
-  "000000000011110000000000"
-  "000000000111111000000000"
-  "000000001110011100000000"
-  "000000011100001110000000"
-  "000000111001100111000000"
-  "000001110011110011100000"
-  "000011100111111001110000"
-  "000011100111111001110000"
-  "000001110011110011100000"
-  "000000111001100111000000"
-  "000000011100001110000000"
-  "000000001110011100000000"
-  "000000000111111000000000"
-  "000000000011110000000000"
-  "000000000001100000000000";
-  
+  "000000010000000100000001"
+  "000000100000001000000010"
+  "000001000000010000000100"
+  "000010000000100000001000"
+  "000100000001000000010000"
+  "001000000010000000100000"
+  "010000000100000001000000"
+  "100000001000000010000000"
+  "100000001000000010000000"
+  "010000000100000001000000"
+  "001000000010000000100000"
+  "000100000001000000010000"
+  "000010000000100000001000"
+  "000001000000010000000100"
+  "000000100000001000000010"
+  "000000010000000100000001";
 
+char rightArrow [] = 
+  "100000001000000010000000"
+  "010000000100000001000000"
+  "001000000010000000100000"
+  "000100000001000000010000"
+  "000010000000100000001000"
+  "000001000000010000000100"
+  "000000100000001000000010"
+  "000000010000000100000001"
+  "000000010000000100000001"
+  "000000100000001000000010"
+  "000001000000010000000100"
+  "000010000000100000001000"
+  "000100000001000000010000"
+  "001000000010000000100000"
+  "010000000100000001000000"
+  "100000001000000010000000";  
+  
 // use this line for single matrix
 HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
 // use this line for two matrices!
@@ -41,40 +58,38 @@ int scrollTime = 130;
 void setup() {
   Serial.begin(9600);
   matrix.begin(HT1632_COMMON_16NMOS);  
-  //matrix.fillScreen();
-  drawLeft();
+  matrix.fillScreen();
   delay(1000);
   matrix.clearScreen();
   delay(500);
 }
 
 void loop() {
-  //drawLeft();
-  delay(500);
+  drawRight();
+  delay(1000);
+  drawLeft();
+  delay(1000);
 }
 
 
 void drawLeft(){
   for(int i = 0; i < 16; i++) {
     for(int j = 0; j<24; j++) {
-      matrix.drawPixel(j, i, leftArrow[j+i*24]);
-      matrix.fillScreen();
+      matrix.drawPixel(j, i, (leftArrow[j+i*24]-'0'));
     }    
   }
+  matrix.writeScreen();
 }
 
-void drawRight(int d){
-  //right arrow
-    matrix.drawLine(0, 0, ((matrix.width())/3)-1, (matrix.height()/2)-1, 1);
-    matrix.drawLine((matrix.width()/3)-1, (matrix.height())/2, 0, matrix.height()-1, 1);
-
-    matrix.drawLine((matrix.width()/3), 0, (2*matrix.width()/3)-1, (matrix.height()/2)-1, 1);
-    matrix.drawLine((2*matrix.width()/3)-1, (matrix.height())/2,matrix.width()/3, matrix.height()-1, 1);
-
-    matrix.drawLine((2*matrix.width()/3), 0, matrix.width()-1, (matrix.height()/2)-1, 1);
-    matrix.drawLine(matrix.width()-1, matrix.height()/2, 2*matrix.width()/3, matrix.height()-1, 1);
-    matrix.writeScreen();
+void drawRight(){
+  for(int i = 0; i < 16; i++) {
+    for(int j = 0; j<24; j++) {
+      matrix.drawPixel(j, i, (rightArrow[j+i*24]-'0'));
+    }    
+  }
+  matrix.writeScreen();
 }
+
 
 
 
