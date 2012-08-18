@@ -19,7 +19,7 @@ class LEDPoint {
   }
   
   void drawPoint(){
-    fill(0, 0, 0);
+    fill(255);
     if(on){
       fill(255, 0, 0);
     }

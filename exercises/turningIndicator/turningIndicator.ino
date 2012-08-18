@@ -1,7 +1,7 @@
 //const int buttonPin = A3;     // the number of the pushbutton pin
 //const int ledPin =  A5;      // the number of the LED pin
-const int buttonPin = A2;     // the number of the pushbutton pin
-const int ledPin =  A4;      // the number of the LED pin
+const int buttonPin = A0;     // the number of the pushbutton pin
+const int ledPin =  12;      // the number of the LED pin
 boolean on = false;
 boolean pressed = false;
 
@@ -26,13 +26,13 @@ void loop(){
     if(on){  
       digitalWrite(ledPin, HIGH);
       Serial.println(" LED on");
-      delay(50);
+      delay(100);
     }
     else {
       // turn LED off:
       digitalWrite(ledPin, LOW);
       Serial.println("LED off");
-      delay(50);
+      delay(100);
     } 
   }
   else if(buttonState == LOW && pressed == true){

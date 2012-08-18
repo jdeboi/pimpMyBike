@@ -19,8 +19,11 @@ int strobePixels [16*24] =
 };
 
 void drawStrobe(){
-  for(int i = 0; i < 16*24; i++){
-    matrix.drawPixel(i%width, i/24, strobePixels[i]);
-  }
-  matrix.writeScreen();
+  //blankScreen();
+  for(int i = 0; i < 16; i++) {
+    for(int j = 0; j<24; j++) {
+      matrix.drawPixel(j, i, strobePixels[j+i*24]);
+      matrix.writeScreen();
+    }    
+ }
 }

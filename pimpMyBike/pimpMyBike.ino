@@ -62,6 +62,7 @@ const int turnLLED = A4;
 int numMatrices = 1;
 int height = 16;
 int width = numMatrices * 32;
+int numLEDs = height*width;
 int stepSize = 2;
 HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
 
@@ -85,18 +86,19 @@ int LCDButton;
 void setup() {
   // set up the LCD's number of rows and columns:
   lcd.begin(16, 2);
-  lcd.print("Speed Test");
+  //lcd.print("Speed Test");
   lcd.setCursor(0,1);
-  lcd.print(" Distance Test");
+  //lcd.print(" Distance Test");
   
+  //Serial.begin(9600);
   
   matrix.begin(HT1632_COMMON_16NMOS);  
   matrix.fillScreen();
   delay(500);
   blankScreen();
   
-  scrollTimer.every(scrollTime, scroll);
-  strobeTimer.every(strobeTime, strobe);
+  //scrollTimer.every(scrollTime, scroll);
+  //strobeTimer.every(strobeTime, strobe);
   
   reedTime = millis();
   
@@ -113,19 +115,21 @@ void loop() {
   checkRightTurning();
   checkLeftTurning();
   //checkBraking();
-  checkReed();
-  printLCD();
-  scrollTimer.update();
-  strobeTimer.update();
+  //checkReed();
+  //printLCD();
+  //scrollTimer.update();
+  //strobeTimer.update();
 }
 
 
 void printLCD(){
   //column, line
   lcd.setCursor(1, 0);      
-  lcd.print(getSpeedString());
+  //lcd.print(getSpeedString());
+  lcd.print("speed");
   lcd.setCursor(1, 1); 
-  lcd.print(getDistanceString());
+  //lcd.print(getDistanceString());
+  lcd.print("distance");
 }
 
 void setLEDShape(){
@@ -136,13 +140,11 @@ void setLEDShape(){
   else if (rOn && lOn == false && stepUp){
     drawRight();
     rightIndicator = true;
-    digitalWrite(turnRLED, HIGH);
   }
   //left turning indicator is on, right off
   else if (lOn && rOn == false && stepUp){
     drawLeft();
     leftIndicator = true;
-    digitalWrite(turnLLED, HIGH);
   }
   //right is on
   else if (lOn && rOn == false && stepUp == false){
@@ -156,7 +158,7 @@ void setLEDShape(){
     lOn = false;
     digitalWrite(turnRLED, LOW);
     digitalWrite(turnLLED, LOW);
-    drawStrobe();
+    //drawStrobe();
   }
   else if(rOn && lOn && strobeOn){
     rightIndicator = false;

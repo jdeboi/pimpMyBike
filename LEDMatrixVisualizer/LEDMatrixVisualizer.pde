@@ -32,6 +32,7 @@ String importFile = "brakeLight.txt";
 //////////////////////////////////////////
 int wLEDs = 24 * numMatrices;
 int hLEDs = 16;
+int numLEDs = wLEDs * hLEDs;
 int circleD = 14;
 int padding = 3;
 int space = circleD + 2 * padding;
@@ -57,7 +58,7 @@ int groupSpacing = spacing*3;
 int vertSpacing = 10;
 int buttonWidth = w/numMatrices/11;
 int buttonHeight = buttonWidth +10;
-int bgColor = 220;
+int bgColor = 60;
 int windowWidth = w;
 int windowHeight = h+buttonWidth+3*vertSpacing;
 
@@ -167,7 +168,7 @@ void draw(){
   for(int i = 0; i < wLEDs; i ++){
     for(int j = 0; j < hLEDs; j++){
       stroke(0);
-      fill(0, 0, 0);
+      fill(255);
       if(LEDPixels[i][j] == 1){
         fill(255, 0, 0);
       }
@@ -347,6 +348,48 @@ void importFrame(){
   }
 }
 
+//print function to create char[]
+void printFrame(){
+  int counter = 0;
+  print("\"");
+  for (int i = 0; i < hLEDs; i++) {
+    for(int j = 0; j < wLEDs; j++){
+        print(LEDPixels[j][i]);
+        counter++;
+        
+        if(counter%24==0){
+          println("\"");
+          if(counter != numLEDs){
+            print("\"");
+          }
+        }
+    }
+  }
+}
+
+
+/*
+//print function to create int[] of led# that are turned on
+void printFrame(){
+  int counter = 0;
+  for (int i = 0; i < hLEDs; i++) {
+    for(int j = 0; j < wLEDs; j++){
+        if(LEDPixels[j][i] == 1){
+          int l = i*wLEDs +j;
+          print(l + ", ");
+          counter++;
+          if(counter%8 == 0){
+            println();
+          }
+        }
+      }
+    }
+    println("counter: " + counter);
+}
+*/
+
+/*
+//print function to create int[] of 0s and 1s
 void printFrame(){
   for (int i = 0; i < hLEDs; i++) {
     for(int j = 0; j < wLEDs; j++){
@@ -360,12 +403,15 @@ void printFrame(){
     println();
   }
 }
-
+*/
+  
 ///////////////////////////////////////////////
 //////////////////////////BUTTON FUNCTIONS///////////////////
 ///////////////////////////////////////////////////////
 void displayButtons(){
   //update and draw buttons
+  fill(220);
+  rect(0, h, windowWidth, windowHeight - h); 
   exportButton.update();
   exportButton.display();
   importButton.update();
