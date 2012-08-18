@@ -18,11 +18,24 @@ char strobePixels [] =
   "000000000001100000000000";
 
 void drawStrobe(){
-  //blankScreen();
-  for(int i = 0; i < 16; i++) {
-    for(int j = 0; j<24; j++) {
+ for(int i = 0; i < 16; i++) {
+    for(int j = 0; j < 24; j++) {
       matrix.drawPixel(j, i, (strobePixels[j+i*24]-'0'));
     }    
  }
  matrix.writeScreen();
 }
+
+
+void setStrobe(){
+  if(stateChange && turningOn == false && brakeOn == false){
+    if (strobeOn){
+      drawStrobe();
+    }
+    else{
+      matrix.clearScreen();
+    }
+  }
+}
+
+

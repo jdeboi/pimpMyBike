@@ -25,16 +25,16 @@ void checkBraking(){
   }
   else if (brakeV == LOW && brakeOld == HIGH){
     brakeOn = false;
-    blankScreen();
-    setLEDShape();
+    stateChange = true;
+    setTurning();
   }
   brakeOld = brakeV;
 }
 
 void drawBrake(){
-  blankScreen();
   for(int i = 0; i < numLEDs; i++){
     matrix.drawPixel(i%width, i/24, (brakePixels[i]-'0'));
   }
   matrix.writeScreen();
 }
+

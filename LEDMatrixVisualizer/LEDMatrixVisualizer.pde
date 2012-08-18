@@ -350,6 +350,8 @@ void importFrame(){
 
 //print function to create char[]
 void printFrame(){
+  println();
+  println("new frame");
   int counter = 0;
   print("\"");
   for (int i = 0; i < hLEDs; i++) {
