@@ -141,22 +141,29 @@ int width = numMatrices * 32;
 int numLEDs = height*width;
 int stepSize = 2;
 char pixel;
-  
 HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
-
-
 ///////LCD//////////////////////
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(2, 3, A0, 8, 7, 4);
 int LCDButton;
 int brightness = 100;
+//////////Timer Variables/////////////////
+int blinkTime = 1000;
+Timer scrollTimer;
+int scrollTime = 130;
+Timer strobeTimer;
+int strobeTime = 100;
+boolean blinkOn;
+
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////SETUP/////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 void setup() {
-  // set up the LCD's number of rows and columns:
   Serial.begin(9600);
+  // set up the LCD's number of rows and columns:
+  scrollTimer.every(scrollTime, scroll);
+  strobeTimer.every(strobeTime, strobe);
   lcd.begin(16, 2);
   setBacklight(130, 222, 219);
   lcd.print("Speed Test");
@@ -182,6 +189,8 @@ void loop() {
   //checkBraking();
   checkTurning();
   setTurning();
+  scrollTimer.update();
+  strobeTimer.update();
   //setStrobe();
   //checkReed();
   //printLCD();
@@ -461,6 +470,34 @@ void stepRight(){
       tmpByteLEDs[i*3] = b1t;
       tmpByteLEDs[i*3 + 1] = b2t;
       tmpByteLEDs[i*3 + 2] = b3t;
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+//////////////////////////TIMER FUNCTIONS/////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+void scroll(){
+  Serial.println("test");
+  if(rOn){
+    //matrix.translate(stepSize, 0);
+    translate(1, 0);
+  }
+  else if(lOn){
+    //matrix.translate(-1*stepSize, 0);
+    translate(-1, 0);
+  }
+}
+
+void strobe(){
+  if(strobeOn && turningOn == false && brakeOn == false){
+    blinkOn =! blinkOn;
+    if(blinkOn){
+      drawBrake();
+    }
+    else{
+      matrix.clearScreen();
+    }
   }
 }
 
