@@ -424,7 +424,7 @@ void printFrame(){
       String rowA = "";
       String rowB = "";
       String rowC = "";
-      for(int j = 0; j < wLEDs/8; j++){
+      for(int j = 0; j < wLEDs/3; j++){
         rowA += LEDPixels[j][i];
         rowB += LEDPixels[j+8][i];
         rowC += LEDPixels[j+16][i];
@@ -433,7 +433,7 @@ void printFrame(){
       int b = unbinary(rowB);
       int c = unbinary(rowC);
       if(i != 15){
-        print(a + ", " + b + ", " + c + ", ");
+        println(a + ", " + b + ", " + c + ", ");
       }
       else{
         print(a + ", " + b + ", " + c +"};");
@@ -545,7 +545,7 @@ void clearAll(){
   rectOn = false;
   for(int i=0; i < wLEDs; i++){
     for(int j=0; j< hLEDs; j++){
-      LEDPixels[i][j] = 0;
+      LEDPixels[i][j] = '0';
     }
   }
 }
