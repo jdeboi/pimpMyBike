@@ -17,42 +17,82 @@
 ////////////////////////////////////////////////////////////////////////////
 /////////////////////////CHAR ARRAYS////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-prog_uchar brake[] PROGMEM  = {
-  "000000000001100000000000"
-  "000000000011110000000000"
-  "000000000111111000000000"
-  "000000001110011100000000"
-  "000000011100001110000000"
-  "000000111001100111000000"
-  "000001110011110011100000"
-  "000011100111111001110000"
-  "000011100111111001110000"
-  "000001110011110011100000"
-  "000000111001100111000000"
-  "000000011100001110000000"
-  "000000001110011100000000"
-  "000000000111111000000000"
-  "000000000011110000000000"
-  "000000000001100000000000"};
 
-prog_uchar indicator[] PROGMEM  = {
-  "100000001000000010000000"
-  "010000000100000001000000"
-  "001000000010000000100000"
-  "000100000001000000010000"
-  "000010000000100000001000"
-  "000001000000010000000100"
-  "000000100000001000000010"
-  "000000010000000100000001"
-  "000000010000000100000001"
-  "000000100000001000000010"
-  "000001000000010000000100"
-  "000010000000100000001000"
-  "000100000001000000010000"
-  "001000000010000000100000"
-  "010000000100000001000000"
-  "100000001000000010000000"};
+prog_uchar rightBytes[48] PROGMEM  = {
+  64, 64, 64, 
+  32, 32, 32, 
+  16, 16, 16, 
+  8, 8, 8, 
+  4, 4, 4, 
+  2, 2, 2, 
+  1, 1, 1, 
+  1, 1, 1, 
+  2, 2, 2, 
+  4, 4, 4, 
+  8, 8, 8, 
+  16, 16, 16, 
+  32, 32, 32, 
+  64, 64, 64, 
+  128, 128, 128
+};
 
+prog_uchar leftBytes [48] PROGMEM = {
+  1, 1, 1, 
+  2, 2, 2, 
+  4, 4, 4, 
+  8, 8, 8, 
+  16, 16, 16, 
+  32, 32, 32, 
+  64, 64, 64, 
+  128, 128, 128, 
+  128, 128, 128, 
+  64, 64, 64, 
+  32, 32, 32, 
+  16, 16, 16, 
+  8, 8, 8, 
+  4, 4, 4, 
+  2, 2, 2, 
+  1, 1, 1
+};
+  
+prog_uchar brakeBytes [48] PROGMEM = {
+  0, 24, 0, 
+  0, 60, 0, 
+  0, 126, 0, 
+  0, 231, 0, 
+  1, 195, 128, 
+  3, 153, 192, 
+  7, 60, 224, 
+  14, 126, 112, 
+  14, 126, 112, 
+  7, 60, 224, 
+  3, 153, 192, 
+  1, 195, 128, 
+  0, 231, 0, 
+  0, 126, 0, 
+  0, 60, 0, 
+  0, 24, 0
+};
+  
+ 
+byte tmpByteLEDs [48] = {
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0
+};
 
 ////////////////////////////////////////////////////////////////////////////
 /////////////////////////VARIABLES////////////////////////////////////////////////
@@ -100,25 +140,6 @@ int height = 16;
 int width = numMatrices * 32;
 int numLEDs = height*width;
 int stepSize = 2;
-char LEDs [] =
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000"
-  "000000000000000000000000";
-
-char storeLEDs[] = "000000000000000000000000";
 char pixel;
   
 HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
@@ -152,8 +173,6 @@ void setup() {
   pinMode(turnRLED, OUTPUT);   
   pinMode(turnLPin, INPUT);
   pinMode(turnLLED, OUTPUT);
-  drawBrake(); 
-  delay(500);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -161,11 +180,8 @@ void setup() {
 ////////////////////////////////////////////////////////////////////////////
 void loop() {
   //checkBraking();
-  //checkTurning();
-  //setTurning();
-  //translate(1,0);
-  translate(1,0);
-  delay(500);
+  checkTurning();
+  setTurning();
   //setStrobe();
   //checkReed();
   //printLCD();
@@ -232,20 +248,41 @@ void setStrobe(){
   }
 }
 */ 
+void setBrake(){
+  for(int i = 0; i < 16; i++) {
+    for(int j = 0; j < 3; j++) {
+      tmpByteLEDs[i*3 + j] = pgm_read_byte_near(brakeBytes + i*3 + j);
+    }
+  }    
+}
+
+
+void setRight(){
+ for(int i = 0; i < 16; i++) {
+    for(int j = 0; j < 3; j++) {
+      tmpByteLEDs[i*3 + j] = pgm_read_byte_near(rightBytes + i*3 + j);
+    }
+  }    
+}
+
+void setLeft(){
+   for(int i = 0; i < 16; i++) {
+    for(int j = 0; j < 3; j++) {
+      tmpByteLEDs[i*3 + j] = pgm_read_byte_near(leftBytes + i*3 + j);
+    }
+  }    
+}
      
 void setTurning(){
   if(stateChange && brakeOn == false){  
     if(rOn && lOn){
       strobeOn =! strobeOn;
-      //drawStrobe();
-      /*
-      *To do- figure out why drawStrobe() causes the entire
-      *sketch to malfunction- stack overflow?
-      *drawRight() is exactly the same and works fine
-      *have to talk to someone who knows more about comp sci
-      *or electronics than I do
-      */
-      matrix.clearScreen();
+      if(strobeOn){
+        drawBrake();
+      }
+      else{
+        matrix.clearScreen();
+      }
       delay(50);
       rOn = false;
       lOn = false;
@@ -338,45 +375,38 @@ String getDistanceString(){
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////DRAW////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-void drawBrake(){
-  for(int i = 0; i < 16; i++) {
-    for(int j = 0; j< 24; j++) {
-      pixel =  pgm_read_byte_near(brake + j+i*24); 
-      matrix.drawPixel(j, i, (pixel-'0'));
-      LEDs[j+i*24] = pixel;
+
+void drawLEDs(){
+ for(int i = 0; i < 16; i++) {
+    for(int j = 0; j < 3; j++) {
+      for(int k = 0; k < 8; k++) {
+        int pixel = bitRead(tmpByteLEDs[i*3+j], 7 - k);
+        matrix.drawPixel(j*8+k, i, pixel);
+      }
     }    
  }
  matrix.writeScreen();
 }
 
 void drawRight(){
- for(int i = 0; i < 16; i++) {
-    for(int j = 0; j< 24; j++) {
-      pixel =  pgm_read_byte_near(indicator + j+i*24); 
-      matrix.drawPixel(j, i, (pixel-'0'));
-      LEDs[j+i*24] = pixel;
-    }    
- }
- matrix.writeScreen();
+  setRight();
+  drawLEDs();
 }
 
 void drawLeft(){
-  for(int i = 0; i < 16; i++) {
-    for(int j = 0; j< 24; j++) {
-      //trick to save memory
-      pixel =  pgm_read_byte_near(indicator + 23-j+i*24); 
-      matrix.drawPixel(j, i, (pixel-'0'));
-      LEDs[j+i*24] = pixel;
-    }    
- }
- matrix.writeScreen();
+  setLeft();
+  drawLEDs();
 }
 
+void drawBrake(){
+  setBrake();
+  drawLEDs();
+}
 
-/*
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////TRANSLATE////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
+
 void translate(int x, int y) {
     //x and y are # of steps in each dimension
     if (x > 0) {
@@ -389,6 +419,7 @@ void translate(int x, int y) {
             stepLeft();
         }
     }
+    /*
     if (y > 0){
         for (int i = 0; i < y; i++) {
             stepUp();
@@ -399,104 +430,37 @@ void translate(int x, int y) {
             stepDown();
         }
     }
-    setLEDs();
+    */
+    drawLEDs();
 }
-    
-void stepRight() {
-    //store the last column 
-    for (int h = 0; h < height; h++) {
-        lastCol[h] = LEDs[width - 1][h];
-    }
-    
-    //move pixels to the right one column at a time
-    //by setting each column equal to the column on the left
-    for (int w = width; w > 0; w--) {
-        for (int h = 0; h < height; h++) {
-            LEDs[w][h] = LEDs[w-1][h];
-        }
-    }
-    //set the first column = to last column of array
-    for (int h = 0; h < height; h++) {
-        LEDs[0][h] = lastCol[h];
-    }
-}
-    
-void stepLeft() {
-    //store the first column 
-    for (int h = 0; h < height; h++) {
-        firstCol[h] = LEDs[0][h];
-    }
-    
-    //move pixels to the left one column at a time
-    //by setting each column equal to the column on the right
-    for (int w = 0; w < width-1; w++) {
-        for (int h = 0; h < height; h++) {
-            LEDs[w][h] = LEDs[w+1][h];
-        }
-    }
-    
-    //set the last column = to first column of the matrix
-    for (int h = 0; h < height; h++) {
-        LEDs[width-1][h] = firstCol[h];
-    }
-}
-    
-void stepUp() {
-    //store the first row 
-    for (int w = 0; w < width; w++) {
-        firstRow[w] = LEDs[w][0];
-    }
-    
-    //move pixels up one row at a time
-    //by setting each row = to row below it
-    for (int h = 0; h < height; h++){
-        for (int w = 0; w < width; w++) {
-            LEDs[w][h]=LEDs[w][h+1];
-        }
-    }
-    
-    //set the last row equal to the first row
-    for (int w = 0; w < width; w++) {
-        LEDs[w][height-1]= firstRow[w];
-    } 
-}
-    
-void stepDown() {
-    //store the last row 
-    for (int w = 0; w < width; w++) {
-        lastRow[w] = LEDs[w][height-1];
-    }
-    
-    //move pixels down one row at a time
-    //by setting each row = to row above it
-    for (int h = height-1; h > 0; h++){
-        for (int w = 0; w < width; w++) {
-            LEDs[w][h]=LEDs[w][h-1];
-        }
-    }
-
-    //set the first row equal to the last row
-    for (int w = 0; w < width; w++) {
-        LEDs[w][0]= lastRow[w];
-    } 
-}    
-
-void clearLEDs() {
-    for (int h = 0; h < height; h++) {
-        for (int w = 0; w < width; w++) {
-            LEDs[w][h] = 0;
-        }
-    }
+   
+void stepLeft(){
+  for(int i = 0; i < 16; i++) {
+      byte b1t = tmpByteLEDs[i*3] << 1;
+      byte b2t = tmpByteLEDs[i*3 + 1] << 1;
+      byte b3t = tmpByteLEDs[i*3 + 2] << 1;
+      bitWrite(b1t, 0, bitRead(tmpByteLEDs[i*3 + 1], 7));
+      bitWrite(b2t, 0, bitRead(tmpByteLEDs[i*3 + 2], 7));
+      bitWrite(b3t, 0, bitRead(tmpByteLEDs[i*3], 7));
+      tmpByteLEDs[i*3] = b1t;
+      tmpByteLEDs[i*3 + 1] = b2t;
+      tmpByteLEDs[i*3 + 2] = b3t;
+  }
 }
 
-    
-void setLEDs() {
-    for (int h = 0; h < height; h++) {
-        for (int w = 0; w < width; w++) {
-            matrix.drawPixel(w, h, LEDs[w][h]-'0');
-        }
-    }
-    matrix.writeScreen();
-}  
-     
-*/
+void stepRight(){
+  //move pixels to the right one bit at a time
+  //by setting each bit equal to the bit on the left
+  for(int i = 0; i < 16; i++) {
+      byte b1t = tmpByteLEDs[i*3] >> 1;
+      byte b2t = tmpByteLEDs[i*3 + 1] >> 1;
+      byte b3t = tmpByteLEDs[i*3 + 2] >> 1;
+      bitWrite(b1t, 7, bitRead(tmpByteLEDs[i*3 + 1], 0));
+      bitWrite(b2t, 7, bitRead(tmpByteLEDs[i*3 + 2], 0));
+      bitWrite(b3t, 7, bitRead(tmpByteLEDs[i*3], 0));
+      tmpByteLEDs[i*3] = b1t;
+      tmpByteLEDs[i*3 + 1] = b2t;
+      tmpByteLEDs[i*3 + 2] = b3t;
+  }
+}
+

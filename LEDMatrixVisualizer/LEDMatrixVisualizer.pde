@@ -49,7 +49,7 @@ boolean rectOn;
 boolean fillOn = false;
 boolean LEDOn = true;
 boolean label;
-int [][] LEDPixels;
+char [][] LEDPixels;
 LinkedList<LEDCircle> LEDCircles = new LinkedList<LEDCircle>();
 LinkedList<LEDLine> LEDLines = new LinkedList<LEDLine>();
 LinkedList<LEDRect> LEDRects = new LinkedList<LEDRect>();
@@ -78,9 +78,9 @@ ImageButtons clearButton;
 /////////////////////////////SETUP//////////////////////////
 ///////////////////////////////////////////////////////
 void setup(){
+  testMath();
   size(windowWidth, windowHeight);
-  LEDPixels = new int[wLEDs][hLEDs];
-  LEDPixels = new int[wLEDs][hLEDs];
+  LEDPixels = new char[wLEDs][hLEDs];
   output = createWriter("frames.txt");
   
   /////////////button details//////////////////////
@@ -169,7 +169,7 @@ void draw(){
     for(int j = 0; j < hLEDs; j++){
       stroke(0);
       fill(255);
-      if(LEDPixels[i][j] == 1){
+      if(LEDPixels[i][j] == '1'){
         fill(255, 0, 0);
       }
       ellipse(i*space+padding, j*space+padding, circleD, circleD);
@@ -270,11 +270,11 @@ void mousePressed() {
       }
     }
     else{
-      if(LEDPixels[x][y] == 1){
-        LEDPixels[x][y] = 0;
+      if(LEDPixels[x][y] == '1'){
+        LEDPixels[x][y] = '0';
       }
       else{
-        LEDPixels[x][y] = 1;
+        LEDPixels[x][y] = '1';
       }
     }
   }
@@ -298,7 +298,7 @@ void keyPressed(){
 //////////////////////////////SET FUNCTIONS/////////////////////
 ///////////////////////////////////////////////////////
 
-void setPixel(int x, int y, int on){
+void setPixel(int x, int y, char on){
   LEDPixels[x][y] = on;
 }
 
@@ -307,10 +307,10 @@ void setShape(int [] shapePoints){
    int x = shapePoints[i];
    int y = shapePoints[i+1];
    if(LEDOn){
-     LEDPixels[x][y] = 1;
+     LEDPixels[x][y] = '1';
    }
    else{
-     LEDPixels[x][y] = 0;
+     LEDPixels[x][y] = '0';
    }
   }
 }
@@ -343,11 +343,12 @@ void importFrame(){
   for (int i = 0; i < hLEDs; i++) {
     String[] elements = split(input[i], "\\s");
     for(int j = 0; j < elements.length; j++){
-      LEDPixels[j][i] = int(elements[j]);
+      LEDPixels[j][i] = elements[j].charAt(0);
     }
   }
 }
 
+/*
 //print function to create char[]
 void printFrame(){
   println();
@@ -368,15 +369,16 @@ void printFrame(){
     }
   }
 }
-
+*/
 
 /*
 //print function to create int[] of led# that are turned on
 void printFrame(){
+  println();
+  println("new frame");
   int counter = 0;
   for (int i = 0; i < hLEDs; i++) {
     for(int j = 0; j < wLEDs; j++){
-        if(LEDPixels[j][i] == 1){
           int l = i*wLEDs +j;
           print(l + ", ");
           counter++;
@@ -393,6 +395,8 @@ void printFrame(){
 /*
 //print function to create int[] of 0s and 1s
 void printFrame(){
+  println();
+  println("new frame");
   for (int i = 0; i < hLEDs; i++) {
     for(int j = 0; j < wLEDs; j++){
       if(i== hLEDs - 1 && j == wLEDs - 1){
@@ -406,6 +410,41 @@ void printFrame(){
   }
 }
 */
+
+
+//print function to represent each row as a 32-bit 
+//int (4 bytes instead of 24 w/ char[])
+//only works with one LED matrix
+void printFrame(){
+  if(numMatrices == 1){
+    println();
+    println("new frame");
+    println("byte byteLEDs [48] = {");
+    for (int i = 0; i < hLEDs; i++) {
+      String rowA = "";
+      String rowB = "";
+      String rowC = "";
+      for(int j = 0; j < wLEDs/8; j++){
+        rowA += LEDPixels[j][i];
+        rowB += LEDPixels[j+8][i];
+        rowC += LEDPixels[j+16][i];
+      }
+      int a = unbinary(rowA);
+      int b = unbinary(rowB);
+      int c = unbinary(rowC);
+      if(i != 15){
+        print(a + ", " + b + ", " + c + ", ");
+      }
+      else{
+        print(a + ", " + b + ", " + c +"};");
+      }
+    }
+  }
+  else{
+    println("This print function can only be used with one matrix for the time being.");
+  }
+}
+
   
 ///////////////////////////////////////////////
 //////////////////////////BUTTON FUNCTIONS///////////////////
@@ -514,6 +553,11 @@ void clearAll(){
 
 
 
-
+void testMath(){
+  String row = "00000011000000000000000000000011";
+  int a = unbinary(row);
+  println(a);
+  println(binary(a, 32));
+}
 
 
