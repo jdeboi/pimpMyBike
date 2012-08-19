@@ -1,4 +1,5 @@
 // include the library code:
+#include <avr/pgmspace.h>
 #include <stdlib.h>
 #include <LiquidCrystal.h>
 #include <Wire.h>
@@ -16,8 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 /////////////////////////CHAR ARRAYS////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
-char brakePixels [] =
+char brakePixels[]  =
   "000000000001100000000000"
   "000000000011110000000000"
   "000000000111111000000000"
@@ -35,7 +35,7 @@ char brakePixels [] =
   "000000000011110000000000"
   "000000000001100000000000";
 
-char rightArrow [] = 
+prog_uchar indicator[] PROGMEM  = {
   "100000001000000010000000"
   "010000000100000001000000"
   "001000000010000000100000"
@@ -51,43 +51,7 @@ char rightArrow [] =
   "000100000001000000010000"
   "001000000010000000100000"
   "010000000100000001000000"
-  "100000001000000010000000";
-
-char leftArrow [] = 
-  "000000010000000100000001"
-  "000000100000001000000010"
-  "000001000000010000000100"
-  "000010000000100000001000"
-  "000100000001000000010000"
-  "001000000010000000100000"
-  "010000000100000001000000"
-  "100000001000000010000000"
-  "100000001000000010000000"
-  "010000000100000001000000"
-  "001000000010000000100000"
-  "000100000001000000010000"
-  "000010000000100000001000"
-  "000001000000010000000100"
-  "000000100000001000000010"
-  "000000010000000100000001";
-
-char strobePixels [] =
-  "000000000001100000000000"
-  "000000000011110000000000"
-  "000000000111111000000000"
-  "000000001110011100000000"
-  "000000011100001110000000"
-  "000000111001100111000000"
-  "000001110011110011100000"
-  "000011100111111001110000"
-  "000011100111111001110000"
-  "000001110011110011100000"
-  "000000111001100111000000"
-  "000000011100001110000000"
-  "000000001110011100000000"
-  "000000000111111000000000"
-  "000000000011110000000000"
-  "000000000001100000000000";
+  "100000001000000010000000"};
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -136,7 +100,7 @@ int height = 16;
 int width = numMatrices * 32;
 int numLEDs = height*width;
 int stepSize = 2;
-/*char LEDs [] =
+char LEDs [] =
   "000000000000000000000000"
   "000000000000000000000000"
   "000000000000000000000000"
@@ -153,12 +117,9 @@ int stepSize = 2;
   "000000000000000000000000"
   "000000000000000000000000"
   "000000000000000000000000";
-*/
-char LEDs [24][16];
-char firstRow[] = "000000000000000000000000";;
-char lastRow[] = "000000000000000000000000";
-char firstCol[] = "000000000000000000000000";
-char lastCol[24] = "000000000000000000000000";
+
+char storeLEDs[] = "000000000000000000000000";
+char pixel;
   
 HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
 
@@ -209,9 +170,10 @@ void loop() {
   delay(500);
   drawRight();
   delay(500);
-  translate(1,0);
-  //drawBrake();
+  //translate(1,0);
+  drawBrake();
   delay(500);
+ 
   /*
   *To do- figure out why drawStrobe() causes the entire
   *sketch to freeze- stack overflow?
@@ -278,6 +240,7 @@ void checkReed(){
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////SET/////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
+/*
 void setStrobe(){
   if(stateChange && turningOn == false && brakeOn == false){
     if (strobeOn){
@@ -288,6 +251,7 @@ void setStrobe(){
     }
   }
 }
+*/ 
      
 void setTurning(){
   if(stateChange && brakeOn == false){  
@@ -395,29 +359,24 @@ String getDistanceString(){
 ////////////////////////////DRAW////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 void drawBrake(){
-  for(int i = 0; i < numLEDs; i++){
-    matrix.drawPixel(i%width, i/24, (brakePixels[i]-'0'));
-    //LEDs[i] = brakePixels[i];
-    LEDs[i%width][i/24] = brakePixels[i];
-  }
-  matrix.writeScreen();
-}
-
-void drawStrobe(){
- for(int i = 0; i < 16; i++) {
-    for(int j = 0; j < 24; j++) {
-      matrix.drawPixel(j, i, (strobePixels[j+i*24]-'0'));
+  for(int i = 0; i < 16; i++) {
+    for(int j = 0; j< 24; j++) {
+      //pixel =  pgm_read_byte_near(brakePixels + j+i*24); 
+      matrix.drawPixel(j, i, (brakePixels[j+i*24]-'0'));
+      LEDs[j+i*24] = brakePixels[j+i*24];
+      //LEDs[j+i*24] = pixel;
+      //LEDs[j][i] = rightArrow[j+i*24];
     }    
  }
  matrix.writeScreen();
 }
 
-
 void drawRight(){
  for(int i = 0; i < 16; i++) {
     for(int j = 0; j< 24; j++) {
-      matrix.drawPixel(j, i, (rightArrow[j+i*24]-'0'));
-      LEDs[j][i] = rightArrow[j+i*24];
+      pixel =  pgm_read_byte_near(indicator + j+i*24); 
+      matrix.drawPixel(j, i, (pixel-'0'));
+      LEDs[j+i*24] = pixel;
     }    
  }
  matrix.writeScreen();
@@ -426,16 +385,17 @@ void drawRight(){
 void drawLeft(){
   for(int i = 0; i < 16; i++) {
     for(int j = 0; j< 24; j++) {
-      matrix.drawPixel(j, i, (leftArrow[j+i*24]-'0'));
-      //LEDs[j+i*24] = leftArrow[j+i*24];
-      LEDs[j][i] = leftArrow[j+i*24];
+      //trick to save memory
+      pixel =  pgm_read_byte_near(indicator + 23-j+i*24); 
+      matrix.drawPixel(j, i, (pixel-'0'));
+      LEDs[j+i*24] = pixel;
     }    
  }
  matrix.writeScreen();
 }
 
 
-
+/*
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////TRANSLATE////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -561,4 +521,4 @@ void setLEDs() {
     matrix.writeScreen();
 }  
      
-
+*/

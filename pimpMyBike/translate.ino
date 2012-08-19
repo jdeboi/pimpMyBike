@@ -1,5 +1,5 @@
 //functions to scroll text on LED matrix
-/*
+
 void translate(int x, int y) {
     //x and y are # of steps in each dimension
     if (x > 0) {
@@ -27,11 +27,8 @@ void translate(int x, int y) {
     
 void stepRight() {
     //store the last column 
-    
-    Serial.print("lC");
     for (int h = 0; h < height; h++) {
-        lastCol[h] = LEDs[width-1+h*24];
-        Serial.print(lastCol[h]);
+        storeLEDs[h] = LEDs[width-1+h*24];
     
     }
     Serial.println();
@@ -45,15 +42,13 @@ void stepRight() {
   
     //set the first column = to last column of array
     for (int h = 0; h < height; h++) {
-        LEDs[h*24] = lastCol[h];
+        LEDs[h*24] = storeLEDs[h];
     }
 }
     
 void stepLeft() {
-    //store the first column 
-    
     for (int h = 0; h < height; h++) {
-        firstCol[h] = LEDs[h*24];
+        storeLEDs[h] = LEDs[h*24];
     }
     
     //move pixels to the left one column at a time
@@ -66,7 +61,7 @@ void stepLeft() {
     
     //set the last column = to first column of the matrix
     for (int h = 0; h < height; h++) {
-        LEDs[width-1+h*24] = firstCol[h];
+        LEDs[width-1+h*24] = storeLEDs[h];
     }
 }
     
@@ -74,7 +69,7 @@ void stepUp() {
     //store the first row 
     
     for (int w = 0; w < width; w++) {
-        firstRow[w] = LEDs[w];
+        storeLEDs[w] = LEDs[w];
     }
     
     //move pixels up one row at a time
@@ -87,15 +82,13 @@ void stepUp() {
     
     //set the last row equal to the first row
     for (int w = 0; w < width; w++) {
-        LEDs[w+24*(height-1)]= firstRow[w];
+        LEDs[w+24*(height-1)]= storeLEDs[w];
     } 
 }
     
 void stepDown() {
-    //store the last row 
-    
     for (int w = 0; w < width; w++) {
-        lastRow[w] = LEDs[w+(height-1)*24];
+        storeLEDs[w] = LEDs[w+(height-1)*24];
     }
     
     //move pixels down one row at a time
@@ -108,7 +101,7 @@ void stepDown() {
 
     //set the first row equal to the last row
     for (int w = 0; w < width; w++) {
-        LEDs[w]= lastRow[w];
+        LEDs[w]= storeLEDs[w];
     } 
 }   
 
@@ -121,7 +114,6 @@ void setLEDs() {
     matrix.writeScreen();
 } 
 
-*/
 
 
 
