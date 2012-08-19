@@ -155,10 +155,10 @@ int stepSize = 2;
   "000000000000000000000000";
 */
 char LEDs [24][16];
-char firstRow[] = "000000000000000000000000";;
-char lastRow[] = "000000000000000000000000";
-char firstCol[] = "000000000000000000000000";
-char lastCol[24] = "000000000000000000000000";
+char firstRow[24];
+char lastRow[24];
+char firstCol[24];
+char lastCol[24];
   
 HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
 
@@ -203,15 +203,18 @@ void loop() {
   //checkTurning();
   //setTurning();
   //translate(1,0);
-  drawLeft();
-  delay(500);
-  matrix.clearScreen();
-  delay(500);
   drawRight();
-  delay(500);
-  translate(1,0);
-  //drawBrake();
-  delay(500);
+  delay(700);
+  matrix.clearScreen();
+  delay(800);
+  drawLeft();
+  delay(800);
+  matrix.clearScreen();
+  delay(800);
+  drawRight();
+  delay(800);
+  drawLeft();
+  delay(800);
   /*
   *To do- figure out why drawStrobe() causes the entire
   *sketch to freeze- stack overflow?
@@ -395,12 +398,13 @@ String getDistanceString(){
 ////////////////////////////DRAW////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 void drawBrake(){
-  for(int i = 0; i < numLEDs; i++){
-    matrix.drawPixel(i%width, i/24, (brakePixels[i]-'0'));
-    //LEDs[i] = brakePixels[i];
-    LEDs[i%width][i/24] = brakePixels[i];
-  }
-  matrix.writeScreen();
+ for(int i = 0; i < 16; i++) {
+    for(int j = 0; j< 24; j++) {
+      matrix.drawPixel(j, i, (brakePixels[j+i*24]-'0'));
+      LEDs[j][i] = brakePixels[j+i*24];
+    }    
+ }
+ matrix.writeScreen();
 }
 
 void drawStrobe(){
@@ -418,9 +422,10 @@ void drawRight(){
     for(int j = 0; j< 24; j++) {
       matrix.drawPixel(j, i, (rightArrow[j+i*24]-'0'));
       LEDs[j][i] = rightArrow[j+i*24];
-    }    
+    }  
+  matrix.writeScreen();  
  }
- matrix.writeScreen();
+ 
 }
 
 void drawLeft(){
@@ -429,9 +434,10 @@ void drawLeft(){
       matrix.drawPixel(j, i, (leftArrow[j+i*24]-'0'));
       //LEDs[j+i*24] = leftArrow[j+i*24];
       LEDs[j][i] = leftArrow[j+i*24];
-    }    
+    }
+  matrix.writeScreen();    
  }
- matrix.writeScreen();
+ 
 }
 
 
