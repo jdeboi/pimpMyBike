@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 /////////////////////////CHAR ARRAYS////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-char brakePixels[]  =
+prog_uchar brake[] PROGMEM  = {
   "000000000001100000000000"
   "000000000011110000000000"
   "000000000111111000000000"
@@ -33,7 +33,7 @@ char brakePixels[]  =
   "000000001110011100000000"
   "000000000111111000000000"
   "000000000011110000000000"
-  "000000000001100000000000";
+  "000000000001100000000000"};
 
 prog_uchar indicator[] PROGMEM  = {
   "100000001000000010000000"
@@ -152,7 +152,7 @@ void setup() {
   pinMode(turnRLED, OUTPUT);   
   pinMode(turnLPin, INPUT);
   pinMode(turnLLED, OUTPUT);
-  drawRight(); 
+  drawBrake(); 
   delay(500);
 }
 
@@ -164,28 +164,8 @@ void loop() {
   //checkTurning();
   //setTurning();
   //translate(1,0);
-  drawLeft();
+  translate(1,0);
   delay(500);
-  matrix.clearScreen();
-  delay(500);
-  drawRight();
-  delay(500);
-  //translate(1,0);
-  drawBrake();
-  delay(500);
- 
-  /*
-  *To do- figure out why drawStrobe() causes the entire
-  *sketch to freeze- stack overflow?
-  *drawRight() is exactly the same and works fine
-  *(if you replace drawStrobe() with drawRight()).
-  *I have to talk to someone who knows more about comp sci
-  *or electronics than I do.
-  *The sketch also freezes when I try to use timers
-  *even though I've literally copy/pasted code from a sketch
-  *specifically designed to scroll LEDs.  I'm convinced that it has
-  *to do with memory/ hardware, but I dunno.
-  */
   //setStrobe();
   //checkReed();
   //printLCD();
@@ -361,11 +341,9 @@ String getDistanceString(){
 void drawBrake(){
   for(int i = 0; i < 16; i++) {
     for(int j = 0; j< 24; j++) {
-      //pixel =  pgm_read_byte_near(brakePixels + j+i*24); 
-      matrix.drawPixel(j, i, (brakePixels[j+i*24]-'0'));
-      LEDs[j+i*24] = brakePixels[j+i*24];
-      //LEDs[j+i*24] = pixel;
-      //LEDs[j][i] = rightArrow[j+i*24];
+      pixel =  pgm_read_byte_near(brake + j+i*24); 
+      matrix.drawPixel(j, i, (pixel-'0'));
+      LEDs[j+i*24] = pixel;
     }    
  }
  matrix.writeScreen();

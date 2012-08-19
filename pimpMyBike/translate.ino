@@ -25,24 +25,15 @@ void translate(int x, int y) {
     setLEDs();
 }
     
-void stepRight() {
-    //store the last column 
-    for (int h = 0; h < height; h++) {
-        storeLEDs[h] = LEDs[width-1+h*24];
+void stepRight(int s) {
     
-    }
-    Serial.println();
     //move pixels to the right one column at a time
     //by setting each column equal to the column on the left
-    for (int w = width-1; w > 0; w--) {
+    for (int w = 1; w < width; w++) {
         for (int h = 0; h < height; h++) {
-            LEDs[w+h*24] = LEDs[w-1+h*24];
+          matrix.drawPixel(w, h, arrow[abs((w-s)%width)+h*24]-'0');
+          LEDs[w+h*24] = LEDs[w-1+h*24];
         }
-    }
-  
-    //set the first column = to last column of array
-    for (int h = 0; h < height; h++) {
-        LEDs[h*24] = storeLEDs[h];
     }
 }
     
