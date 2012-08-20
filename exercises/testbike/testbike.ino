@@ -13,42 +13,60 @@
 #define GREENLITE 6
 #define BLUELITE 9
 
-char rightArrow [] = 
-  "100000001000000010000000"
-  "010000000100000001000000"
-  "001000000010000000100000"
-  "000100000001000000010000"
-  "000010000000100000001000"
-  "000001000000010000000100"
-  "000000100000001000000010"
-  "000000010000000100000001"
-  "000000010000000100000001"
-  "000000100000001000000010"
-  "000001000000010000000100"
-  "000010000000100000001000"
-  "000100000001000000010000"
-  "001000000010000000100000"
-  "010000000100000001000000"
-  "100000001000000010000000";
-
-char leftArrow [] = 
-  "000000010000000100000001"
-  "000000100000001000000010"
-  "000001000000010000000100"
-  "000010000000100000001000"
-  "000100000001000000010000"
-  "001000000010000000100000"
-  "010000000100000001000000"
-  "100000001000000010000000"
-  "100000001000000010000000"
-  "010000000100000001000000"
-  "001000000010000000100000"
-  "000100000001000000010000"
-  "000010000000100000001000"
-  "000001000000010000000100"
-  "000000100000001000000010"
-  "000000010000000100000001";
-
+byte byteLEDs [48] = {
+  0, 24, 0, 
+  0, 60, 0, 
+  0, 126, 0, 
+  0, 231, 0, 
+  1, 195, 128, 
+  3, 153, 192, 
+  7, 60, 224, 
+  14, 126, 112, 
+  14, 126, 112, 
+  7, 60, 224, 
+  3, 153, 192, 
+  1, 195, 128, 
+  0, 231, 0, 
+  0, 126, 0, 
+  0, 60, 0, 
+  0, 24, 0};
+  
+/*  
+byte tmpByteLEDs [48] = {
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0, 
+  0, 0, 0};
+*/
+byte tmpByteLEDs [48] = {
+  0, 24, 0, 
+  0, 60, 0, 
+  0, 126, 0, 
+  0, 231, 0, 
+  1, 195, 128, 
+  3, 153, 192, 
+  7, 60, 224, 
+  14, 126, 112, 
+  14, 126, 112, 
+  7, 60, 224, 
+  3, 153, 192, 
+  1, 195, 128, 
+  0, 231, 0, 
+  0, 126, 0, 
+  0, 60, 0, 
+  0, 24, 0};
 
 ///////Brake Switch/////////////
 int brakeV; 
@@ -116,7 +134,6 @@ void setup() {
   matrix.fillScreen();
   delay(500);
   matrix.clearScreen();
-  drawRight();
   delay(50);
   pinMode(turnRPin, INPUT); 
   pinMode(turnRLED, OUTPUT);   
@@ -136,64 +153,41 @@ void loop() {
   //matrix.writeScreen();
   //delay(1000);
   scrollTimer.update();
+  drawLEDs();
+  delay(500);
+  translateLeft();
+  delay(500);
   //strobeTimer.update();
 }
 
-void blankScreen(){
-  matrix.clearScreen();
-  matrix.clearLEDs();
-}
 
-void checkTurning(){
-  stateChange = false;
-  right = digitalRead(turnRPin);
-  left = digitalRead(turnLPin);
-  if(right == HIGH && rightOld == LOW){
-      rOn =! rOn;
-      stateChange = true;
-  }
-  else if(left == HIGH && leftOld == LOW){
-     lOn =! lOn;
-     stateChange = true;
-  }
-  rightOld = right;
-  leftOld = left;
-}
-     
-void setTurning(){
-  if(stateChange && brakeOn == false){  
-    if(rOn && lOn){
-      strobeOn =! strobeOn;
-      rOn = false;
-      lOn = false;
-      digitalWrite(turnRLED, LOW);
-      digitalWrite(turnLLED, LOW);
-    }
-    else if(rOn && lOn == false){
-      drawRight();
-      digitalWrite(turnRLED, HIGH);
-    }
-    else if(rOn == false && lOn){
-      drawLeft();
-      digitalWrite(turnLLED, HIGH);
-    }
-    else if(rOn == false && lOn == false){
-      matrix.clearScreen();
-      digitalWrite(turnRLED, LOW);
-      digitalWrite(turnLLED, LOW);
-    }
-  }
-}
-
-void drawRight(){
+void drawLEDs(){
  for(int i = 0; i < 16; i++) {
-    for(int j = 0; j<24; j++) {
-      matrix.drawPixel(j, i, (rightArrow[j+i*24]-'0'));
+    for(int j = 0; j < 3; j++) {
+      for(int k = 0; k < 8; k++) {
+        int pixel = bitRead(tmpByteLEDs[i*3+j], 7 - k);
+        matrix.drawPixel(j*8+k, i, pixel);
+      }
     }    
  }
  matrix.writeScreen();
 }
 
+void stepLeft(){
+  for(int i = 0; i < 16; i++) {
+      byte b1t = tmpByteLEDs[i*3] << 1;
+      byte b2t = tmpByteLEDs[i*3 + 1] << 1;
+      byte b3t = tmpByteLEDs[i*3 + 2] << 1;
+      bitWrite(b1t, 0, bitRead(tmpByteLEDs[i*3 + 1], 7));
+      bitWrite(b2t, 0, bitRead(tmpByteLEDs[i*3 + 2], 7));
+      bitWrite(b3t, 0, bitRead(tmpByteLEDs[i*3], 7));
+      tmpByteLEDs[i*3] = b1t;
+      tmpByteLEDs[i*3 + 1] = b2t;
+      tmpByteLEDs[i*3 + 2] = b3t;
+  }
+}
+
+/*
 void drawLeft(){
   for(int i = 0; i < 16; i++) {
     for(int j = 0; j<24; j++) {
@@ -202,14 +196,15 @@ void drawLeft(){
  }
  matrix.writeScreen();
 }
+*/
 
 void scroll(){
   if(rightIndicator){
-    matrix.translate(stepSize, 0);
+    //matrix.translate(stepSize, 0);
     matrix.writeScreen();
   }
   else if(leftIndicator){
-    matrix.translate(-1*stepSize, 0);
+    //matrix.translate(-1*stepSize, 0);
     matrix.writeScreen();
   }
 }

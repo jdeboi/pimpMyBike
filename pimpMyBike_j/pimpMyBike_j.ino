@@ -6,21 +6,21 @@
 #include "Timer.h"
 #include "HT1632.h"
 
-#define DATA 11
-#define WR   12
-#define CS   10
+#define DATA 11 //orange
+#define WR   10 //yellow
+#define CS   9 //white
 
-#define REDLITE 5
-#define GREENLITE 6
-#define BLUELITE 9
+#define REDLITE 6
+#define GREENLITE 5
+#define BLUELITE 3
 
-int brakeVPin;
-int reedPin = A1;  
-LiquidCrystal lcd(2, 3, A0, 8, 7, 4);
-const int turnRPin = A3;
+const int turnRPin = A1;
 const int turnLPin = A2;
-const int turnRLED = A5;
-const int turnLLED = A4;
+const int turnRLED = 7;
+const int turnLLED = 4;
+int reedPin = A0; 
+LiquidCrystal lcd(A3, A5, 8, 2, 13, A4);
+int brakeVPin = 12;
 
 ////////////////////////////////////////////////////////////////////////////
 /////////////////////////CHAR ARRAYS////////////////////////////////////////////////
@@ -62,7 +62,7 @@ prog_uchar leftBytes [48] PROGMEM = {
   2, 2, 2, 
   1, 1, 1
 };
-
+  
 prog_uchar brakeBytes [48] PROGMEM = {
   0, 24, 0, 
   0, 60, 0, 
@@ -81,8 +81,8 @@ prog_uchar brakeBytes [48] PROGMEM = {
   0, 60, 0, 
   0, 24, 0
 };
-
-
+  
+ 
 byte tmpByteLEDs [48] = {
   0, 0, 0, 
   0, 0, 0, 
@@ -107,10 +107,10 @@ byte tmpByteLEDs [48] = {
 ////////////////////////////////////////////////////////////////////////////
 ///////Brake Switch/////////////
 int brakeV; 
-int brakeOld; 
+int brakeOld;
 boolean brakeOn = false;
 boolean strobeOn = false;
-///////Reed Switch//////////////
+///////Reed Switch////////////// 
 int circleNum = 0;
 float wheelDiameter = 25.2;
 float wheelC = 3.14 * wheelDiameter;
@@ -161,19 +161,23 @@ boolean blinkOn;
 //////////////////////////SETUP/////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 void setup() {
-  Serial.begin(9600);
+  //digitalWrite(power, HIGH);
+  //Serial.begin(9600);
   // set up the LCD's number of rows and columns:
   scrollTimer.every(scrollTime, scroll);
   strobeTimer.every(strobeTime, strobe);
   lcd.begin(16, 2);
   setBacklight(130, 222, 219);
-
+  lcd.print("Speed Test");
+  lcd.setCursor(0,1);
+  lcd.print(" Distance Test");
+  
   matrix.begin(HT1632_COMMON_16NMOS); 
   delay(500);
   matrix.fillScreen();
   delay(500);
   matrix.clearScreen();
-
+ 
   pinMode(turnRPin, INPUT); 
   pinMode(turnRLED, OUTPUT);   
   pinMode(turnLPin, INPUT);
@@ -184,15 +188,16 @@ void setup() {
 ////////////////////////////LOOP////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 void loop() {
+  Serial.begin(9600);
   //checkBraking();
   checkTurning();
   setTurning();
   scrollTimer.update();
   strobeTimer.update();
+  //drawBrake();
   //setStrobe();
   checkReed();
-  printSpeed();
-  printDistance();
+  //printLCD();
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -217,12 +222,12 @@ void checkTurning(){
   right = digitalRead(turnRPin);
   left = digitalRead(turnLPin);
   if(right == HIGH && rightOld == LOW){
-    rOn =! rOn;
-    stateChange = true;
+      rOn =! rOn;
+      stateChange = true;
   }
   else if(left == HIGH && leftOld == LOW){
-    lOn =! lOn;
-    stateChange = true;
+     lOn =! lOn;
+     stateChange = true;
   }
   rightOld = right;
   leftOld = left;
@@ -246,16 +251,16 @@ void checkReed(){
 ////////////////////////////////////////////////////////////////////////////
 /*
 void setStrobe(){
- if(stateChange && turningOn == false && brakeOn == false){
- if (strobeOn){
- drawStrobe();
- }
- else{
- matrix.clearScreen();
- }
- }
- }
- */
+  if(stateChange && turningOn == false && brakeOn == false){
+    if (strobeOn){
+      drawStrobe();
+    }
+    else{
+      matrix.clearScreen();
+    }
+  }
+}
+*/ 
 void setBrake(){
   for(int i = 0; i < 16; i++) {
     for(int j = 0; j < 3; j++) {
@@ -266,7 +271,7 @@ void setBrake(){
 
 
 void setRight(){
-  for(int i = 0; i < 16; i++) {
+ for(int i = 0; i < 16; i++) {
     for(int j = 0; j < 3; j++) {
       tmpByteLEDs[i*3 + j] = pgm_read_byte_near(rightBytes + i*3 + j);
     }
@@ -274,13 +279,13 @@ void setRight(){
 }
 
 void setLeft(){
-  for(int i = 0; i < 16; i++) {
+   for(int i = 0; i < 16; i++) {
     for(int j = 0; j < 3; j++) {
       tmpByteLEDs[i*3 + j] = pgm_read_byte_near(leftBytes + i*3 + j);
     }
   }    
 }
-
+     
 void setTurning(){
   if(stateChange && brakeOn == false){  
     if(rOn && lOn){
@@ -327,11 +332,11 @@ void setBacklight(uint8_t r, uint8_t g, uint8_t b) {
   // normalize the red LED - its brighter than the rest!
   r = map(r, 0, 255, 0, 100);
   g = map(g, 0, 255, 0, 150);
-
+ 
   r = map(r, 0, 255, 0, brightness);
   g = map(g, 0, 255, 0, brightness);
   b = map(b, 0, 255, 0, brightness);
-
+ 
   // common anode so invert!
   r = map(r, 0, 255, 255, 0);
   g = map(g, 0, 255, 255, 0);
@@ -346,41 +351,38 @@ void setBacklight(uint8_t r, uint8_t g, uint8_t b) {
 
 
 ////////////////////////////////////////////////////////////////////////////
-////////////////////////////PRINT/////////////////////////////////////////////////
+////////////////////////////GET/////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-void printSpeed(){
+String getSpeedString(){
   speedometer = wheelC/reedTimeDelta; 
   if(metric){
     KPH = speedometer * 36;
-    lcd.setCursor(1, 0); 
-    lcd.print("KPH: ");
-    lcd.setCursor(6, 0);
-    lcd.print(KPH, 2);
+    char tmp[25] = "KPH: ";
+    dtostrf(KPH,1,2, &tmp[12]);
+    return tmp;
   }
   else{
     MPH = speedometer * 22.369;
-    lcd.setCursor(1, 0); 
-    lcd.print("MPH: ");
-    lcd.setCursor(6, 0);
-    lcd.print(MPH, 2);
+    char tmp[25] = "KPH: ";
+    dtostrf(MPH,1,2, &tmp[12]);
+    return tmp;
   } 
 }
 
-void printDistance(){
+String getDistanceString(){
   odometer = wheelC*circleNum;
   if(metric){
     kilometers = odometer / 100000;
-    lcd.setCursor(1, 1); 
-    lcd.print("KM: ");
-    lcd.setCursor(5, 1);
-    lcd.print(kilometers, 2); 
+    char tmp[25] = "Distance: ";
+    dtostrf(kilometers,1,2, &tmp[12]);
+    Serial.println("kilometers");
+    return tmp; 
   }
   else{
     miles = odometer / 160934.4;
-    lcd.setCursor(1, 1); 
-    lcd.print("Miles: ");
-    lcd.setCursor(5, 1);
-    lcd.print(miles, 2); 
+    char tmp[25] = "Distance: ";
+    dtostrf(miles,1,2, &tmp[12]);
+    return tmp; 
   }
 }
 
@@ -389,15 +391,15 @@ void printDistance(){
 ////////////////////////////////////////////////////////////////////////////
 
 void drawLEDs(){
-  for(int i = 0; i < 16; i++) {
+ for(int i = 0; i < 16; i++) {
     for(int j = 0; j < 3; j++) {
       for(int k = 0; k < 8; k++) {
         int pixel = bitRead(tmpByteLEDs[i*3+j], 7 - k);
         matrix.drawPixel(j*8+k, i, pixel);
       }
     }    
-  }
-  matrix.writeScreen();
+ }
+ matrix.writeScreen();
 }
 
 void drawRight(){
@@ -420,43 +422,43 @@ void drawBrake(){
 ////////////////////////////////////////////////////////////////////////////
 
 void translate(int x, int y) {
-  //x and y are # of steps in each dimension
-  if (x > 0) {
-    for (int i = 0; i < x; i++) {
-      stepRight();
+    //x and y are # of steps in each dimension
+    if (x > 0) {
+        for (int i = 0; i < x; i++) {
+            stepRight();
+        }
     }
-  }
-  else if (x < 0){  
-    for (int i = 0; i > x; i--) {
-      stepLeft();
+    else if (x < 0){  
+        for (int i = 0; i > x; i--) {
+            stepLeft();
+        }
     }
-  }
-  /*
+    /*
     if (y > 0){
-   for (int i = 0; i < y; i++) {
-   stepUp();
-   }
-   }
-   else if (y < 0){
-   for (int i = 0; i > y; i--) {
-   stepDown();
-   }
-   }
-   */
-  drawLEDs();
+        for (int i = 0; i < y; i++) {
+            stepUp();
+        }
+    }
+    else if (y < 0){
+        for (int i = 0; i > y; i--) {
+            stepDown();
+        }
+    }
+    */
+    drawLEDs();
 }
-
+   
 void stepLeft(){
   for(int i = 0; i < 16; i++) {
-    byte b1t = tmpByteLEDs[i*3] << 1;
-    byte b2t = tmpByteLEDs[i*3 + 1] << 1;
-    byte b3t = tmpByteLEDs[i*3 + 2] << 1;
-    bitWrite(b1t, 0, bitRead(tmpByteLEDs[i*3 + 1], 7));
-    bitWrite(b2t, 0, bitRead(tmpByteLEDs[i*3 + 2], 7));
-    bitWrite(b3t, 0, bitRead(tmpByteLEDs[i*3], 7));
-    tmpByteLEDs[i*3] = b1t;
-    tmpByteLEDs[i*3 + 1] = b2t;
-    tmpByteLEDs[i*3 + 2] = b3t;
+      byte b1t = tmpByteLEDs[i*3] << 1;
+      byte b2t = tmpByteLEDs[i*3 + 1] << 1;
+      byte b3t = tmpByteLEDs[i*3 + 2] << 1;
+      bitWrite(b1t, 0, bitRead(tmpByteLEDs[i*3 + 1], 7));
+      bitWrite(b2t, 0, bitRead(tmpByteLEDs[i*3 + 2], 7));
+      bitWrite(b3t, 0, bitRead(tmpByteLEDs[i*3], 7));
+      tmpByteLEDs[i*3] = b1t;
+      tmpByteLEDs[i*3 + 1] = b2t;
+      tmpByteLEDs[i*3 + 2] = b3t;
   }
 }
 
@@ -464,15 +466,15 @@ void stepRight(){
   //move pixels to the right one bit at a time
   //by setting each bit equal to the bit on the left
   for(int i = 0; i < 16; i++) {
-    byte b1t = tmpByteLEDs[i*3] >> 1;
-    byte b2t = tmpByteLEDs[i*3 + 1] >> 1;
-    byte b3t = tmpByteLEDs[i*3 + 2] >> 1;
-    bitWrite(b1t, 7, bitRead(tmpByteLEDs[i*3 + 1], 0));
-    bitWrite(b2t, 7, bitRead(tmpByteLEDs[i*3 + 2], 0));
-    bitWrite(b3t, 7, bitRead(tmpByteLEDs[i*3], 0));
-    tmpByteLEDs[i*3] = b1t;
-    tmpByteLEDs[i*3 + 1] = b2t;
-    tmpByteLEDs[i*3 + 2] = b3t;
+      byte b1t = tmpByteLEDs[i*3] >> 1;
+      byte b2t = tmpByteLEDs[i*3 + 1] >> 1;
+      byte b3t = tmpByteLEDs[i*3 + 2] >> 1;
+      bitWrite(b1t, 7, bitRead(tmpByteLEDs[i*3 + 1], 0));
+      bitWrite(b2t, 7, bitRead(tmpByteLEDs[i*3 + 2], 0));
+      bitWrite(b3t, 7, bitRead(tmpByteLEDs[i*3], 0));
+      tmpByteLEDs[i*3] = b1t;
+      tmpByteLEDs[i*3 + 1] = b2t;
+      tmpByteLEDs[i*3 + 2] = b3t;
   }
 }
 
@@ -503,5 +505,4 @@ void strobe(){
     }
   }
 }
-
 
