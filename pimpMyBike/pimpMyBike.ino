@@ -431,18 +431,16 @@ void translate(int x, int y) {
       stepLeft();
     }
   }
-  /*
-    if (y > 0){
+  if (y > 0){
    for (int i = 0; i < y; i++) {
-   stepUp();
+     stepUp();
    }
+  }
+  else if (y < 0){
+    for (int i = 0; i > y; i--) {
+     stepDown();
+     }
    }
-   else if (y < 0){
-   for (int i = 0; i > y; i--) {
-   stepDown();
-   }
-   }
-   */
   drawLEDs();
 }
 
@@ -476,6 +474,38 @@ void stepRight(){
   }
 }
 
+void stepUp(){
+  //move pixels up by setting each byte equal to the byte 
+  //below it
+  byte b1t =  tmpByteLEDs[0];
+  byte b2t = tmpByteLEDs[1];
+  byte b3t = tmpByteLEDs[2];
+  for(int i = 0; i < 15; i++) {
+    for (int j = 0; j < 3; j++){
+      tmpByteLEDs[i*3 + j] = tmpByteLEDs[(i+1)*3 + j];
+    }
+  }
+  tmpByteLEDs[45] = b1t;
+  tmpByteLEDs[46] = b2t;
+  tmpByteLEDs[47] = b3t;
+}
+
+void stepDown(){
+  //move pixels up by setting each byte equal to the byte 
+  //below it
+  byte b1t =  tmpByteLEDs[45];
+  byte b2t = tmpByteLEDs[46];
+  byte b3t = tmpByteLEDs[47];
+  for(int i = 15; i > 0; i--) {
+    for (int j = 0; j < 3; j++){
+      tmpByteLEDs[i*3 + j] = tmpByteLEDs[(i-1)*3 + j];
+    }
+  }
+  tmpByteLEDs[0] = b1t;
+  tmpByteLEDs[1] = b2t;
+  tmpByteLEDs[2] = b3t;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////////TIMER FUNCTIONS/////////////////////////////////////////
@@ -484,7 +514,7 @@ void scroll(){
   Serial.println("test");
   if(rOn){
     //matrix.translate(stepSize, 0);
-    translate(1, 0);
+    translate(0, 1);
   }
   else if(lOn){
     //matrix.translate(-1*stepSize, 0);
