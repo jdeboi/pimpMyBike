@@ -492,7 +492,7 @@ void stepUp(){
 
 void stepDown(){
   //move pixels up by setting each byte equal to the byte 
-  //below it
+  //above it
   byte b1t =  tmpByteLEDs[45];
   byte b2t = tmpByteLEDs[46];
   byte b3t = tmpByteLEDs[47];
