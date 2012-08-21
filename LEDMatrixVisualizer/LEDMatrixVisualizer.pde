@@ -20,6 +20,8 @@ to write functions to animate individual shape objects.
 
 //////////modify these variables///////////
 int numMatrices = 1;
+//set this variable equal to false to make the matrix vertical
+boolean horizOrientation = true;
 /*
 Make sure that the import file name is different from the export file 
 before the sketch is run; otherwise, the former will be wiped in the setup().
@@ -78,7 +80,16 @@ ImageButtons clearButton;
 /////////////////////////////SETUP//////////////////////////
 ///////////////////////////////////////////////////////
 void setup(){
-  testMath();
+  if(horizOrientation == false){
+    int hTemp = wLEDs;
+    wLEDs = hLEDs;
+    hLEDs = hTemp;
+    w = wLEDs*space;
+    h = hLEDs*space;
+    hTemp = wLEDs*space;
+    windowHeight = h+buttonWidth+3*vertSpacing;
+    windowWidth = 24 * space;
+  }
   size(windowWidth, windowHeight);
   LEDPixels = new char[wLEDs][hLEDs];
   output = createWriter("frames.txt");
@@ -197,10 +208,23 @@ void draw(){
   stroke(0);
   strokeWeight(2);
   fill(0);
-  line(0, h/2, w, h/2);
-  line(0, h, w, h);
-  for(int i = 1; i < numMatrices*3; i++){
-    line(i*w/(3*numMatrices), 0, i*w/(3*numMatrices), h);
+  
+  if(horizOrientation){
+    //center horizontal line
+    line(0, h/2, w, h/2);
+    //bottom horizontal line
+    line(0, h, w, h);
+    for(int i = 1; i < numMatrices*3; i++){
+      line(i*w/(3*numMatrices), 0, i*w/(3*numMatrices), h);
+    }
+  }
+  else{
+   line(w/2, 0, w/2, h);
+   line(w, 0, w, h);
+    line(0, h, windowWidth, h);
+    for(int i = 1; i < numMatrices*3; i++){
+      line(0, i*h/(3*numMatrices), w, i*h/(3*numMatrices));
+    }
   }
   strokeWeight(1);
   //draw pixel labels if labels are on
@@ -221,7 +245,7 @@ void draw(){
 /////////////////////////////MOUSE PRESSED////////////////////
 ///////////////////////////////////////////////////////
 void mousePressed() {
-  if(mouseY< h){
+  if(mouseY< h && mouseX < w){
     int x = mouseX/space;
     int y = mouseY/space;
     if(lineOn){
@@ -290,6 +314,43 @@ void keyPressed(){
   if(drawing == false){
     if(key == 'c'){
       clearAll();
+    }
+    else if(key == 'l'){
+      lineOn = true;
+      circleOn = false;
+      rectOn = false;
+      click1 = true;
+      lineButton.pressed();
+      rectButton.reset();
+      circleButton.reset();
+    }
+    else if(key == 'c'){
+      circleOn = true;
+      lineOn = false;
+      rectOn = false;
+      click1 = true;
+      circleButton.pressed();
+      rectButton.reset();
+      lineButton.reset();
+    }
+    else if(key == 'e'){
+      exportFrame();
+    }
+    else if (key == 'p'){
+      printFrame();
+    }
+    else if(key == 'i'){
+      importFrame();
+    }
+
+    else if(key == 'r'){
+      rectOn = true;
+      circleOn = false;
+      lineOn = false;
+      click1 = true;
+      rectButton.pressed();
+      lineButton.reset();
+      circleButton.reset();
     }
   }
 }
@@ -420,24 +481,29 @@ void printFrame(){
     println();
     println("new frame");
     println("byte byteLEDs [48] = {");
-    for (int i = 0; i < hLEDs; i++) {
-      String rowA = "";
-      String rowB = "";
-      String rowC = "";
-      for(int j = 0; j < wLEDs/3; j++){
-        rowA += LEDPixels[j][i];
-        rowB += LEDPixels[j+8][i];
-        rowC += LEDPixels[j+16][i];
+    if(horizOrientation){
+      for (int i = 0; i < hLEDs; i++) {
+        String rowA = "";
+        String rowB = "";
+        String rowC = "";
+        for(int j = 0; j < wLEDs/3; j++){
+          rowA += LEDPixels[j][i];
+          rowB += LEDPixels[j+8][i];
+          rowC += LEDPixels[j+16][i];
+        }
+        int a = unbinary(rowA);
+        int b = unbinary(rowB);
+        int c = unbinary(rowC);
+        if(i != 15){
+          println(a + ", " + b + ", " + c + ", ");
+        }
+        else{
+          print(a + ", " + b + ", " + c +"};");
+        }
       }
-      int a = unbinary(rowA);
-      int b = unbinary(rowB);
-      int c = unbinary(rowC);
-      if(i != 15){
-        println(a + ", " + b + ", " + c + ", ");
-      }
-      else{
-        print(a + ", " + b + ", " + c +"};");
-      }
+    }
+    else{
+      println("Can't print vertical matrices at this time.");
     }
   }
   else{
@@ -548,16 +614,6 @@ void clearAll(){
       LEDPixels[i][j] = '0';
     }
   }
-}
-
-
-
-
-void testMath(){
-  String row = "00000011000000000000000000000011";
-  int a = unbinary(row);
-  println(a);
-  println(binary(a, 32));
 }
 
 
