@@ -6,7 +6,7 @@
 #include "Timer.h"
 #include "HT1632.h"
 
-#define DATA 11
+#define DATA 11 //orange
 #define WR   12
 #define CS   10
 
@@ -14,7 +14,7 @@
 #define GREENLITE 6
 #define BLUELITE 9
 
-int brakeVPin;
+int brakeVPin = 13;
 int reedPin = A1;  
 LiquidCrystal lcd(2, 3, A0, 8, 7, 4);
 const int turnRPin = A3;
@@ -136,6 +136,8 @@ int right;
 int left;
 int rightOld;
 int leftOld;
+int millisRight;
+int millisLeft;
 ///////Turning Indicator Matrix///////////
 // use this line for single matrix
 int numMatrices = 1;
@@ -149,6 +151,10 @@ HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
 // initialize the library with the numbers of the interface pins
 int LCDButton;
 int brightness = 100;
+int red = 130;
+int green = 222;
+int blue = 219;
+int counter;
 //////////Timer Variables/////////////////
 int blinkTime = 1000;
 Timer scrollTimer;
@@ -167,7 +173,7 @@ void setup() {
   scrollTimer.every(scrollTime, scroll);
   strobeTimer.every(strobeTime, strobe);
   lcd.begin(16, 2);
-  setBacklight(130, 222, 219);
+  setBacklight(red, green, blue);
 
   matrix.begin(HT1632_COMMON_16NMOS); 
   delay(500);
@@ -185,7 +191,7 @@ void setup() {
 ////////////////////////////LOOP////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 void loop() {
-  //checkBraking();
+  checkBraking();
   checkTurning();
   setTurning();
   scrollTimer.update();
@@ -218,12 +224,24 @@ void checkTurning(){
   right = digitalRead(turnRPin);
   left = digitalRead(turnLPin);
   if(right == HIGH && rightOld == LOW){
+    millisRight = millis();
     rOn =! rOn;
     stateChange = true;
   }
   else if(left == HIGH && leftOld == LOW){
+    millisLeft = millis();
     lOn =! lOn;
     stateChange = true;
+  }
+  else if(right == HIGH && rightOld == HIGH){
+    if(millis() - millisRight > 500){
+      setLCDColor();
+    }
+  }
+  else if(left == HIGH && leftOld == HIGH){
+    if(millis() - millsLeft > 500){
+      setBrightness();
+    }
   }
   rightOld = right;
   leftOld = left;
@@ -345,6 +363,39 @@ void setBacklight(uint8_t r, uint8_t g, uint8_t b) {
   analogWrite(BLUELITE, b);
 }
 
+void setBrightness(){
+  if (brightness == 255){
+    brightUp == false;
+  }
+  else if (brightness == 0){
+    brightUp == true;
+  }
+  if(brightUp){
+    brightness++;
+  }
+  else {
+    brightness --;
+  }
+}
+
+void setLCDColor(){
+  counter++;
+  if(counter == 765){
+    counter = 0;
+  }
+  if(counter < 255){
+    setBacklight(counter, 0, 255-counter);
+    delay(5);
+  }
+  else if(counter >= 255 && counter < 510) {
+    setBacklight(255 - (counter % 255), (counter % 255), 0);
+    delay(5);
+  }
+  else {
+    setBacklight(0, 255 - (counter % 510), (counter % 510));
+    delay(5);
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////PRINT/////////////////////////////////////////////////
@@ -446,6 +497,8 @@ void translate(int x, int y) {
 }
 
 void stepLeft(){
+//move pixels to the left one bit at a time
+  //by setting each bit equal to the bit on the right
   for(int i = 0; i < 16; i++) {
     byte b1t = tmpByteLEDs[i*3] << 1;
     byte b2t = tmpByteLEDs[i*3 + 1] << 1;
@@ -492,7 +545,7 @@ void stepUp(){
 }
 
 void stepDown(){
-  //move pixels up by setting each byte equal to the byte 
+  //move pixels down by setting each byte equal to the byte 
   //above it
   byte b1t =  tmpByteLEDs[45];
   byte b2t = tmpByteLEDs[46];
@@ -512,14 +565,16 @@ void stepDown(){
 //////////////////////////TIMER FUNCTIONS/////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 void scroll(){
-  Serial.println("test");
-  if(rOn){
-    //matrix.translate(stepSize, 0);
-    translate(0, 1);
-  }
-  else if(lOn){
-    //matrix.translate(-1*stepSize, 0);
-    translate(0, -1);
+  if(brakeOn == false){
+    Serial.println("test");
+    if(rOn){
+      //matrix.translate(stepSize, 0);
+      translate(0, 1);
+    }
+    else if(lOn){
+      //matrix.translate(-1*stepSize, 0);
+      translate(0, -1);
+    }
   }
 }
 
