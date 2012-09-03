@@ -136,8 +136,8 @@ int right;
 int left;
 int rightOld;
 int leftOld;
-int millisRight;
-int millisLeft;
+unsigned long millisRight;
+unsigned long millisLeft;
 ///////Turning Indicator Matrix///////////
 // use this line for single matrix
 int numMatrices = 1;
@@ -263,18 +263,7 @@ void checkReed(){
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////SET/////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-/*
-void setStrobe(){
- if(stateChange && turningOn == false && brakeOn == false){
- if (strobeOn){
- drawStrobe();
- }
- else{
- matrix.clearScreen();
- }
- }
- }
- */
+
 void setBrake(){
   for(int i = 0; i < 16; i++) {
     for(int j = 0; j < 3; j++) {
@@ -395,6 +384,11 @@ void setLCDColor(){
     setBacklight(0, 255 - (counter % 510), (counter % 510));
     delay(5);
   }
+}
+
+void resetLCD(){
+  circleNum = 0;
+  setBacklight(red, green, blue);
 }
 
 ////////////////////////////////////////////////////////////////////////////
