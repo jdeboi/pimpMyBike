@@ -152,12 +152,18 @@ boolean blinkOn;
 /////////LED Designs//////////////////////////
 ///////////////////////////////
 
-//bitmap of LED pixels
-//printed using LED matrix visulaizer
-//save SRAM by saving in flash memory:
-//http://arduino.cc/en/Reference/PROGMEM
-//not enough SRAM to store LED patterns as
-//ints or chars
+/*
+Note: bitmap of LED pixels (ints in 
+binary store value of each LED- either
+1 or 0- on/off respectively.
+printed  the ints using LED matrix visulaizer
+http://jdeboi.com/portfolio/electronics/bike/visualizer.html
+
+save SRAM by saving in flash memory:
+http://arduino.cc/en/Reference/PROGMEM
+not enough SRAM to store LED patterns as
+ints or chars
+*/
 
 //right turning indicator LED pattern
 prog_uchar rightBytes[48] PROGMEM  = {
