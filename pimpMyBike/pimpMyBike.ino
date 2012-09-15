@@ -33,22 +33,23 @@ const int brakeVPin = A0;
 #define GREENLITE 6 //green LED in LCD backlight (LCD pin #17)
 #define BLUELITE 9  //blue LED in LCD backlight (LCD pin #18)
 LiquidCrystal lcd(2, 3, 13, 8, 7, 4);
-
-//for LCD pin wiring: http://learn.adafruit.com/character-lcds/rgb-backlit-lcds
-//LCD# - Arduino#
-//1 - GND
-//2 - 5V
-//3 - LCD potentiometer
-//4 - D7 Adafruit code, D2 my sketch
-//5 - GND
-//6 - D8 Adafruit code, D3 my sketch
-//7 through 10 aren't connected to the Arduino
-//11 - D9 Adafruit code, D13 my sketch
-//12 - D10 Adafruit code, D8 my sketch
-//13 - D11 Adafruit code, D7 my sketch
-//14 - D12 Adafruit code, D4 my sketch
-//15 - 5V
-//16 through 18 are ~PWM pins used for the backlight
+/*
+for LCD pin wiring: http://learn.adafruit.com/character-lcds/rgb-backlit-lcds
+LCD# - Arduino#
+1 - GND
+2 - 5V
+3 - LCD potentiometer
+4 - D7 Adafruit code, D2 my sketch
+5 - GND
+6 - D8 Adafruit code, D3 my sketch
+7 through 10 aren't connected to the Arduino
+11 - D9 Adafruit code, D13 my sketch
+12 - D10 Adafruit code, D8 my sketch
+13 - D11 Adafruit code, D7 my sketch
+14 - D12 Adafruit code, D4 my sketch
+15 - 5V
+16 through 18 are ~PWM pins used for the backlight
+*/
 
 ////LED panel
 #define DATA 11 //LED panel; orange wire
@@ -76,8 +77,6 @@ boolean strobeOn = false;
 
 ///////Reed Switch//////////////
 int circleNum = 0;
-float wheelDiameter = 25.2;
-float wheelC = 3.14 * wheelDiameter;
 float odometer = 0;
 float miles = 0;
 float kilometers = 0;
