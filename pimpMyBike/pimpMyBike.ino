@@ -14,16 +14,21 @@
 #include "Timer.h"
 #include "HT1632.h"
 
-///////Pins to set////////////////////////////
-//Note 1: Change the pin numbers according
-//to your individual circuit.
+/////Variables to set/////////////////////////
+float wheelC = 32;
 
-//Note 2: For this project, it doesn't matter
-//whether you use analog or digital pins, 
-//with the exception of the three pins that
-//control the brightness of the LCD 
-//backlight (must use ~PWM to get analog
-//output).
+///////Pins to set////////////////////////////
+/*
+Note 1: Change the pin numbers according
+to your individual circuit.
+
+Note 2: For this project, it doesn't matter
+whether you use analog or digital pins, 
+with the exception of the three pins that
+control the brightness of the LCD 
+backlight (must use ~PWM to get analog
+output).
+*/
 
 ////Brake
 const int brakeVPin = A0;
@@ -245,18 +250,21 @@ void setup() {
   pinMode(turnLPin, INPUT);
   pinMode(turnLLED, OUTPUT);
   
-  //measure the brake threshold when the Arduino turns on- 
-  //the tab may have moved around since the last time
-  //you used the bike circuit
+  /*
+  measure the brake threshold when the Arduino turns on- 
+  the tab may have moved around since the last time
+  you used the bike circuit
+  */
   brakeThresh = analogRead(brakeV) - 25;
   delay(800);
 
-  ///////////////
-  //optional to do: Map the brake LED brightness
-  //to force applied on the brakes,
-  //more accurately, to the voltage divider of two
-  //resistors in series 
-  //map(0, 1023, 0, brakeThresh);
+  /*
+  optional to do: Map the brake LED brightness
+  to force applied on the brakes,
+  more accurately, to the voltage divider of two
+  resistors in series- 
+  map(0, 1023, 0, brakeThresh);
+  */
 }
 
 ///////////////////////////////////////////////////////////////
