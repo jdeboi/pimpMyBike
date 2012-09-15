@@ -30,10 +30,10 @@ backlight (must use ~PWM to get analog
 output).
 */
 
-////Brake
+//////////Brake/////////////////
 const int brakeVPin = A0;
 
-////LCD
+////////////LCD/////////////////
 #define REDLITE 5   //red LED in LCD backlight (LCD pin #16)
 #define GREENLITE 6 //green LED in LCD backlight (LCD pin #17)
 #define BLUELITE 9  //blue LED in LCD backlight (LCD pin #18)
@@ -57,15 +57,15 @@ LCD# - Arduino#
 16 through 18 are ~PWM pins used for the backlight
 */
 
-////LED panel
+//////////LED Panel/////////////
 #define DATA 11 //LED panel; orange wire
 #define WR   12 //LED panel; yello wire
 #define CS   10 //LED panel; white wire
 
-////Speedometer/odometer
+//////Speed/dist pin////////////
 const int reedPin = A1; 
 
-////Turning indicator buttons
+//////Turning Pins//////////////
 const int turnRPin = A3; //pin used to sense turning button
 const int turnRLED = A5; //pin used to turn on button LED
 const int turnLPin = A2; //pin used to sense turning button
