@@ -1,3 +1,21 @@
+
+/////////////////////////CHAR ARRAYS////////////////////////////////////
+////////////////////////////////////////////////////////////
+///////////////////////////////////
+////////////////////////
+////////////
+//jdeboi
+//September 15, 2012
+
+////////////////////////////////////////////////
+///////////////////////////////////
+////////////////////////
+////////////
+Jenna deBoisblanc
+//September 15, 2012
+//Feel free to copy, distribute, improve, deconstruct.
+//
+
 // include the library code:
 #include <avr/pgmspace.h>
 #include <stdlib.h>
@@ -14,38 +32,19 @@
 #define GREENLITE 6
 #define BLUELITE 9
 
-int brakeVPin = 13;
+int brakeVPin = A0;
 int reedPin = A1;  
-LiquidCrystal lcd(2, 3, A0, 8, 7, 4);
+LiquidCrystal lcd(2, 3, 13, 8, 7, 4);
 const int turnRPin = A3;
 const int turnLPin = A2;
 const int turnRLED = A5;
 const int turnLLED = A4;
 
-////////////////////////////////////////////////////////////////////////////
-/////////////////////////CHAR ARRAYS////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+/////////////////////////CHAR ARRAYS/////////////////
+///////////////////////////////////////////
 
 prog_uchar rightBytes[48] PROGMEM  = {
-  0, 24, 0, 
-  0, 60, 0, 
-  0, 126, 0, 
-  0, 231, 0, 
-  1, 195, 128, 
-  3, 129, 192, 
-  7, 0, 224, 
-  14, 0, 112, 
-  0, 28, 0, 
-  0, 62, 0, 
-  0, 119, 0, 
-  0, 227, 128, 
-  1, 193, 192, 
-  3, 128, 224, 
-  7, 0, 112, 
-  14, 0, 56
-};
-
-prog_uchar leftBytes [48] PROGMEM = {
   28, 0, 56, 
   14, 0, 112, 
   7, 0, 224, 
@@ -62,6 +61,25 @@ prog_uchar leftBytes [48] PROGMEM = {
   0, 231, 0, 
   0, 126, 0, 
   0, 60, 0
+};
+
+prog_uchar leftBytes [48] PROGMEM = {
+  0, 24, 0, 
+  0, 60, 0, 
+  0, 126, 0, 
+  0, 231, 0, 
+  1, 195, 128, 
+  3, 129, 192, 
+  7, 0, 224, 
+  14, 0, 112, 
+  0, 28, 0, 
+  0, 62, 0, 
+  0, 119, 0, 
+  0, 227, 128, 
+  1, 193, 192, 
+  3, 128, 224, 
+  7, 0, 112, 
+  14, 0, 56
 };
 
 prog_uchar brakeBytes [48] PROGMEM = {
@@ -103,12 +121,15 @@ byte tmpByteLEDs [48] = {
   0, 0, 0
 };
 
-////////////////////////////////////////////////////////////////////////////
-/////////////////////////VARIABLES////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+/////////////////////////VARIABLES///////////////////
+///////////////////////////////////////////
+
 ///////Brake Switch/////////////
 int brakeV; 
 int brakeOld; 
+int brakeThresh = 250;
+int brakeTime;
 boolean brakeOn = false;
 boolean strobeOn = false;
 ///////Reed Switch//////////////
@@ -150,11 +171,12 @@ HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
 ///////LCD//////////////////////
 // initialize the library with the numbers of the interface pins
 int LCDButton;
-int brightness = 100;
+int brightness = 0;
 int red = 130;
 int green = 222;
 int blue = 219;
 int counter;
+boolean brightUp;
 //////////Timer Variables/////////////////
 int blinkTime = 1000;
 Timer scrollTimer;
@@ -164,16 +186,16 @@ int strobeTime = 100;
 boolean blinkOn;
 
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////SETUP/////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+//////////////////////////SETUP//////////////////////
+///////////////////////////////////////////
 void setup() {
-  Serial.begin(9600);
+  delay(500);
   // set up the LCD's number of rows and columns:
   scrollTimer.every(scrollTime, scroll);
   strobeTimer.every(strobeTime, strobe);
   lcd.begin(16, 2);
-  setBacklight(red, green, blue);
+  setBacklight();
 
   matrix.begin(HT1632_COMMON_16NMOS); 
   delay(500);
@@ -185,11 +207,23 @@ void setup() {
   pinMode(turnRLED, OUTPUT);   
   pinMode(turnLPin, INPUT);
   pinMode(turnLLED, OUTPUT);
+  //measure the brake threshold when the Arduino turns on- 
+  //the tab may have moved around since the last time
+  //you used the bike circuit
+  brakeThresh = analogRead(brakeV) - 25;
+  delay(800);
+  
+  ///////////////
+  //optional to do: Map the brake LED brightness
+  //to force applied on the brakes,
+  //more accurately, to the voltage divider of two
+  //resistors in series 
+  //map(0, 1023, 0, brakeThresh);
 }
 
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////LOOP////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+////////////////////////////LOOP/////////////////////
+///////////////////////////////////////////
 void loop() {
   checkBraking();
   checkTurning();
@@ -200,23 +234,25 @@ void loop() {
   checkReed();
   printSpeed();
   printDistance();
+  //debugBrake();
 }
 
-////////////////////////////////////////////////////////////////////////////
-///////////////////////////CHECK////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+///////////////////////////CHECK/////////////////////
+///////////////////////////////////////////
 void checkBraking(){
-  brakeV = digitalRead(brakeVPin);
-  if(brakeV == HIGH && brakeOld == LOW){
+  brakeV = analogRead(brakeVPin);
+  if(brakeV < brakeThresh){
     brakeOn = true;
     drawBrake();
   }
-  else if (brakeV == LOW && brakeOld == HIGH){
-    brakeOn = false;
-    stateChange = true;
-    setTurning();
+  else if (brakeV > brakeThresh){
+    if(brakeOn == true){
+      brakeOn = false;
+      stateChange = true;
+      setTurning();
+    }
   }
-  brakeOld = brakeV;
 }
 
 void checkTurning(){
@@ -235,11 +271,16 @@ void checkTurning(){
   }
   else if(right == HIGH && rightOld == HIGH){
     if(millis() - millisRight > 500){
-      setLCDColor();
+      if(odometer == 0){
+        setLCDColor();
+      }
+      else{
+        resetLCD();
+      }
     }
   }
   else if(left == HIGH && leftOld == HIGH){
-    if(millis() - millsLeft > 500){
+    if(millis() - millisLeft > 500){
       setBrightness();
     }
   }
@@ -260,9 +301,9 @@ void checkReed(){
   }
 }
 
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////SET/////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+////////////////////////////SET//////////////////////
+///////////////////////////////////////////
 
 void setBrake(){
   for(int i = 0; i < 16; i++) {
@@ -271,7 +312,6 @@ void setBrake(){
     }
   }    
 }
-
 
 void setRight(){
   for(int i = 0; i < 16; i++) {
@@ -331,11 +371,15 @@ void setTurning(){
   }
 }
 
-void setBacklight(uint8_t r, uint8_t g, uint8_t b) {
+void setBacklight() {
   // normalize the red LED - its brighter than the rest!
+  int r = red;
+  int g = green;
+  int b = blue;
+  
   r = map(r, 0, 255, 0, 100);
   g = map(g, 0, 255, 0, 150);
-
+  
   r = map(r, 0, 255, 0, brightness);
   g = map(g, 0, 255, 0, brightness);
   b = map(b, 0, 255, 0, brightness);
@@ -344,9 +388,7 @@ void setBacklight(uint8_t r, uint8_t g, uint8_t b) {
   r = map(r, 0, 255, 255, 0);
   g = map(g, 0, 255, 255, 0);
   b = map(b, 0, 255, 255, 0);
-  //Serial.print("R = "); Serial.print(r, DEC);
-  //Serial.print(" G = "); Serial.print(g, DEC);
-  //Serial.print(" B = "); Serial.println(b, DEC);
+ 
   analogWrite(REDLITE, r);
   analogWrite(GREENLITE, g);
   analogWrite(BLUELITE, b);
@@ -365,6 +407,7 @@ void setBrightness(){
   else {
     brightness --;
   }
+  setBacklight();
 }
 
 void setLCDColor(){
@@ -373,27 +416,32 @@ void setLCDColor(){
     counter = 0;
   }
   if(counter < 255){
-    setBacklight(counter, 0, 255-counter);
-    delay(5);
+    red = counter;
+    green = 0;
+    blue = 255 - counter;
   }
   else if(counter >= 255 && counter < 510) {
-    setBacklight(255 - (counter % 255), (counter % 255), 0);
-    delay(5);
+    red = 255 - (counter % 255);
+    green = (counter % 255);
+    blue = 0;
   }
   else {
-    setBacklight(0, 255 - (counter % 510), (counter % 510));
-    delay(5);
+    red = 0;
+    green = 255 - (counter % 510);
+    blue = counter % 510;
   }
+  setBacklight();
+  delay(5);
 }
 
 void resetLCD(){
   circleNum = 0;
-  setBacklight(red, green, blue);
+  brightness = 0;
 }
 
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////PRINT/////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+///////////////////////////PRINT/////////////////////
+///////////////////////////////////////////
 void printSpeed(){
   speedometer = wheelC/reedTimeDelta; 
   if(metric){
@@ -430,9 +478,9 @@ void printDistance(){
   }
 }
 
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////DRAW////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+///////////////////////////DRAW//////////////////////
+///////////////////////////////////////////
 
 void drawLEDs(){
   for(int i = 0; i < 16; i++) {
@@ -461,9 +509,9 @@ void drawBrake(){
   drawLEDs();
 }
 
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////TRANSLATE////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+/////////////////////////TRANSLATE///////////////////
+///////////////////////////////////////////
 
 void translate(int x, int y) {
   //x and y are # of steps in each dimension
@@ -555,19 +603,18 @@ void stepDown(){
 }
 
 
-////////////////////////////////////////////////////////////////////////////
-//////////////////////////TIMER FUNCTIONS/////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+//////////////////////TIMER FUNCTIONS////////////////
+///////////////////////////////////////////
 void scroll(){
   if(brakeOn == false){
-    Serial.println("test");
     if(rOn){
       //matrix.translate(stepSize, 0);
-      translate(0, 1);
+      translate(0, -1);
     }
     else if(lOn){
       //matrix.translate(-1*stepSize, 0);
-      translate(0, -1);
+      translate(0, 1);
     }
   }
 }
@@ -584,4 +631,13 @@ void strobe(){
   }
 }
 
+///////////////////////////////////////////////////////////////
+//////////////////////DEBUG FUNCTIONS////////////////
+///////////////////////////////////////////
+
+void debugBrake(){
+    int br = analogRead(brakeVPin);
+    lcd.setCursor(1, 0); 
+    lcd.print(br);
+}
 
