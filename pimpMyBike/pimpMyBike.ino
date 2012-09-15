@@ -5,8 +5,10 @@
 //for more information: www.jdeboi.com
 //Feel free to copy, distribute, improve, deconstruct...
 
-
+////////////////////////////////////
 ///////Headers/libraries//////////////////////
+///////////////////////////////
+
 #include <avr/pgmspace.h>
 #include <stdlib.h>
 #include <LiquidCrystal.h>
@@ -14,10 +16,15 @@
 #include "Timer.h"
 #include "HT1632.h"
 
+////////////////////////////////////
 /////Variables to set/////////////////////////
+///////////////////////////////
+
 float wheelC = 32;
 
+////////////////////////////////////
 ///////Pins to set////////////////////////////
+///////////////////////////////
 /*
 Note 1: Change the pin numbers according
 to your individual circuit.
@@ -30,7 +37,7 @@ backlight (must use ~PWM to get analog
 output).
 */
 
-//////////Brake/////////////////
+//////////Brake/////////////////  
 const int brakeVPin = A0;
 
 ////////////LCD/////////////////
@@ -71,8 +78,10 @@ const int turnRLED = A5; //pin used to turn on button LED
 const int turnLPin = A2; //pin used to sense turning button
 const int turnLLED = A4; //pin used to turn on button LED
 
-
+////////////////////////////////////
 ///////Bike Variables/////////////////////////
+///////////////////////////////
+
 ///////Brake Switch/////////////
 int brakeV; 
 int brakeOld; 
@@ -135,8 +144,9 @@ Timer strobeTimer;
 int strobeTime = 100;
 boolean blinkOn;
 
-
-///////LED Designs//////////////
+////////////////////////////////////
+/////////LED Designs//////////////////////////
+///////////////////////////////
 
 //bitmap of LED pixels
 //printed using LED matrix visulaizer
