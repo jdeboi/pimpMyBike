@@ -6,7 +6,6 @@
 //Feel free to copy, distribute, improve, deconstruct...
 
 
-
 ///////Headers/libraries//////////////////////
 #include <avr/pgmspace.h>
 #include <stdlib.h>
@@ -385,6 +384,8 @@ void setTurning(){
 }
 
 void setBacklight() {
+  // courtesy of Adafruit
+  // http://learn.adafruit.com/character-lcds/rgb-backlit-lcds
   // normalize the red LED - its brighter than the rest!
   int r = red;
   int g = green;
