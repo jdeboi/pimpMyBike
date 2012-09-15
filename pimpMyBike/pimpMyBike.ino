@@ -25,24 +25,40 @@
 //backlight (must use ~PWM to get analog
 //output).
 
-//Brake
-int brakeVPin = A0;
+////Brake
+const int brakeVPin = A0;
 
-//LCD
-#define REDLITE 5   //red LED in LCD backlight
-#define GREENLITE 6 //green LED in LCD backlight
-#define BLUELITE 9  //blue LED in LCD backlight 
+////LCD
+#define REDLITE 5   //red LED in LCD backlight (LCD pin #16)
+#define GREENLITE 6 //green LED in LCD backlight (LCD pin #17)
+#define BLUELITE 9  //blue LED in LCD backlight (LCD pin #18)
 LiquidCrystal lcd(2, 3, 13, 8, 7, 4);
 
-//LED panel
+//for LCD pin wiring: http://learn.adafruit.com/character-lcds/rgb-backlit-lcds
+//LCD# - Arduino#
+//1 - GND
+//2 - 5V
+//3 - LCD potentiometer
+//4 - D7 Adafruit code, D2 my sketch
+//5 - GND
+//6 - D8 Adafruit code, D3 my sketch
+//7 through 10 aren't connected to the Arduino
+//11 - D9 Adafruit code, D13 my sketch
+//12 - D10 Adafruit code, D8 my sketch
+//13 - D11 Adafruit code, D7 my sketch
+//14 - D12 Adafruit code, D4 my sketch
+//15 - 5V
+//16 through 18 are ~PWM pins used for the backlight
+
+////LED panel
 #define DATA 11 //LED panel; orange wire
 #define WR   12 //LED panel; yello wire
 #define CS   10 //LED panel; white wire
 
-//Speedometer/odometer
-int reedPin = A1; 
+////Speedometer/odometer
+const int reedPin = A1; 
 
-//Turning indicator buttons
+////Turning indicator buttons
 const int turnRPin = A3; //pin used to sense turning button
 const int turnRLED = A5; //pin used to turn on button LED
 const int turnLPin = A2; //pin used to sense turning button
@@ -116,6 +132,15 @@ boolean blinkOn;
 
 
 ///////LED Designs//////////////
+
+//bitmap of LED pixels
+//printed using LED matrix visulaizer
+//save SRAM by saving in flash memory:
+//http://arduino.cc/en/Reference/PROGMEM
+//not enough SRAM to store LED patterns as
+//ints or chars
+
+//right turning indicator LED pattern
 prog_uchar rightBytes[48] PROGMEM  = {
   28, 0, 56, 
   14, 0, 112, 
@@ -135,6 +160,7 @@ prog_uchar rightBytes[48] PROGMEM  = {
   0, 60, 0
 };
 
+//left turning indicator LED pattern
 prog_uchar leftBytes [48] PROGMEM = {
   0, 24, 0, 
   0, 60, 0, 
@@ -154,6 +180,7 @@ prog_uchar leftBytes [48] PROGMEM = {
   14, 0, 56
 };
 
+//brake and night-taillight LED pattern
 prog_uchar brakeBytes [48] PROGMEM = {
   0, 24, 0, 
   0, 60, 0, 
@@ -173,7 +200,8 @@ prog_uchar brakeBytes [48] PROGMEM = {
   0, 24, 0
 };
 
-
+//byte array to store LED pattern;
+//needed for translate()
 byte tmpByteLEDs [48] = {
   0, 0, 0, 
   0, 0, 0, 
@@ -217,12 +245,13 @@ void setup() {
   pinMode(turnRLED, OUTPUT);   
   pinMode(turnLPin, INPUT);
   pinMode(turnLLED, OUTPUT);
+  
   //measure the brake threshold when the Arduino turns on- 
   //the tab may have moved around since the last time
   //you used the bike circuit
   brakeThresh = analogRead(brakeV) - 25;
   delay(800);
-  
+
   ///////////////
   //optional to do: Map the brake LED brightness
   //to force applied on the brakes,
@@ -241,7 +270,6 @@ void loop() {
   setTurning();
   scrollTimer.update();
   strobeTimer.update();
-  //setStrobe();
   checkReed();
   printSpeed();
   printDistance();
@@ -282,18 +310,17 @@ void checkTurning(){
     stateChange = true;
   }
   else if(right == HIGH && rightOld == HIGH){
-    if(millis() - millisRight > 500){
-      if(odometer == 0){
-        setLCDColor();
-      }
-      else{
-        resetLCD();
-      }
+    int deltaTime = millis() - millisRight;
+    if(deltaTime > 600 && deltaTime < 700){
+      backlightOff();  
+    }
+    else if (deltaTime >= 700) {
+      setLCDColor(); 
     }
   }
   else if(left == HIGH && leftOld == HIGH){
     if(millis() - millisLeft > 500){
-      setBrightness();
+      resetLCD();
     }
   }
   rightOld = right;
@@ -390,10 +417,10 @@ void setBacklight() {
   int r = red;
   int g = green;
   int b = blue;
-  
+
   r = map(r, 0, 255, 0, 100);
   g = map(g, 0, 255, 0, 150);
-  
+
   r = map(r, 0, 255, 0, brightness);
   g = map(g, 0, 255, 0, brightness);
   b = map(b, 0, 255, 0, brightness);
@@ -402,25 +429,14 @@ void setBacklight() {
   r = map(r, 0, 255, 255, 0);
   g = map(g, 0, 255, 255, 0);
   b = map(b, 0, 255, 255, 0);
- 
+
   analogWrite(REDLITE, r);
   analogWrite(GREENLITE, g);
   analogWrite(BLUELITE, b);
 }
 
-void setBrightness(){
-  if (brightness == 255){
-    brightUp == false;
-  }
-  else if (brightness == 0){
-    brightUp == true;
-  }
-  if(brightUp){
-    brightness++;
-  }
-  else {
-    brightness --;
-  }
+void backlightOff(){
+  brightness = 0;
   setBacklight();
 }
 
@@ -541,20 +557,20 @@ void translate(int x, int y) {
     }
   }
   if (y > 0){
-   for (int i = 0; i < y; i++) {
-     stepUp();
-   }
+    for (int i = 0; i < y; i++) {
+      stepUp();
+    }
   }
   else if (y < 0){
     for (int i = 0; i > y; i--) {
-     stepDown();
-     }
-   }
+      stepDown();
+    }
+  }
   drawLEDs();
 }
 
 void stepLeft(){
-//move pixels to the left one bit at a time
+  //move pixels to the left one bit at a time
   //by setting each bit equal to the bit on the right
   for(int i = 0; i < 16; i++) {
     byte b1t = tmpByteLEDs[i*3] << 1;
@@ -652,8 +668,9 @@ void strobe(){
 ///////////////////////////////////////////
 
 void debugBrake(){
-    int br = analogRead(brakeVPin);
-    lcd.setCursor(1, 0); 
-    lcd.print(br);
+  int br = analogRead(brakeVPin);
+  lcd.setCursor(1, 0); 
+  lcd.print(br);
 }
+
 
