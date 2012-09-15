@@ -38,6 +38,7 @@ const int brakeVPin = A0;
 #define GREENLITE 6 //green LED in LCD backlight (LCD pin #17)
 #define BLUELITE 9  //blue LED in LCD backlight (LCD pin #18)
 LiquidCrystal lcd(2, 3, 13, 8, 7, 4);
+
 /*
 for LCD pin wiring: http://learn.adafruit.com/character-lcds/rgb-backlit-lcds
 LCD# - Arduino#
