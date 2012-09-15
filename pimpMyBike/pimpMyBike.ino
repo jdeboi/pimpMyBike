@@ -1,22 +1,13 @@
-
-/////////////////////////CHAR ARRAYS////////////////////////////////////
-////////////////////////////////////////////////////////////
-///////////////////////////////////
-////////////////////////
-////////////
+////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////
 //jdeboi
 //September 15, 2012
+//for more information: www.jdeboi.com
+//Feel free to copy, distribute, improve, deconstruct...
 
-////////////////////////////////////////////////
-///////////////////////////////////
-////////////////////////
-////////////
-Jenna deBoisblanc
-//September 15, 2012
-//Feel free to copy, distribute, improve, deconstruct.
-//
 
-// include the library code:
+
+///////Headers/libraries//////////////////////
 #include <avr/pgmspace.h>
 #include <stdlib.h>
 #include <LiquidCrystal.h>
@@ -24,26 +15,108 @@ Jenna deBoisblanc
 #include "Timer.h"
 #include "HT1632.h"
 
-#define DATA 11 //orange
-#define WR   12
-#define CS   10
+///////Pins to set////////////////////////////
+//Note 1: Change the pin numbers according
+//to your individual circuit.
 
-#define REDLITE 5
-#define GREENLITE 6
-#define BLUELITE 9
+//Note 2: For this project, it doesn't matter
+//whether you use analog or digital pins, 
+//with the exception of the three pins that
+//control the brightness of the LCD 
+//backlight (must use ~PWM to get analog
+//output).
 
+//Brake
 int brakeVPin = A0;
-int reedPin = A1;  
+
+//LCD
+#define REDLITE 5   //red LED in LCD backlight
+#define GREENLITE 6 //green LED in LCD backlight
+#define BLUELITE 9  //blue LED in LCD backlight 
 LiquidCrystal lcd(2, 3, 13, 8, 7, 4);
-const int turnRPin = A3;
-const int turnLPin = A2;
-const int turnRLED = A5;
-const int turnLLED = A4;
 
-///////////////////////////////////////////////////////////////
-/////////////////////////CHAR ARRAYS/////////////////
-///////////////////////////////////////////
+//LED panel
+#define DATA 11 //LED panel; orange wire
+#define WR   12 //LED panel; yello wire
+#define CS   10 //LED panel; white wire
 
+//Speedometer/odometer
+int reedPin = A1; 
+
+//Turning indicator buttons
+const int turnRPin = A3; //pin used to sense turning button
+const int turnRLED = A5; //pin used to turn on button LED
+const int turnLPin = A2; //pin used to sense turning button
+const int turnLLED = A4; //pin used to turn on button LED
+
+
+///////Bike Variables/////////////////////////
+///////Brake Switch/////////////
+int brakeV; 
+int brakeOld; 
+int brakeThresh = 250;
+int brakeTime;
+boolean brakeOn = false;
+boolean strobeOn = false;
+
+///////Reed Switch//////////////
+int circleNum = 0;
+float wheelDiameter = 25.2;
+float wheelC = 3.14 * wheelDiameter;
+float odometer = 0;
+float miles = 0;
+float kilometers = 0;
+float speedometer = 0;
+float MPH = 0;
+float KPH = 0;
+int reedTime = 0;
+int reedTimeDelta = 0;
+boolean reedOn = false;
+boolean metric = true;
+
+////Turning Indicator Buttons///
+boolean rOn = false;
+boolean lOn = false;
+boolean stateChange = false;
+boolean turningOn = false;
+boolean turningLOn = false;
+boolean turningROn = false;
+int right;
+int left;
+int rightOld;
+int leftOld;
+unsigned long millisRight;
+unsigned long millisLeft;
+
+//////LED Panel/////////////////
+//single matrix
+int numMatrices = 1;
+int height = 16;
+int width = numMatrices * 32;
+int numLEDs = height*width;
+int stepSize = 2;
+char pixel;
+HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
+
+///////LCD//////////////////////
+int LCDButton;
+int brightness = 0;
+int red = 130;
+int green = 222;
+int blue = 219;
+int counter;
+boolean brightUp;
+
+//////////Timer Variables///////
+int blinkTime = 1000;
+Timer scrollTimer;
+int scrollTime = 130;
+Timer strobeTimer;
+int strobeTime = 100;
+boolean blinkOn;
+
+
+///////LED Designs//////////////
 prog_uchar rightBytes[48] PROGMEM  = {
   28, 0, 56, 
   14, 0, 112, 
@@ -121,74 +194,12 @@ byte tmpByteLEDs [48] = {
   0, 0, 0
 };
 
-///////////////////////////////////////////////////////////////
-/////////////////////////VARIABLES///////////////////
-///////////////////////////////////////////
-
-///////Brake Switch/////////////
-int brakeV; 
-int brakeOld; 
-int brakeThresh = 250;
-int brakeTime;
-boolean brakeOn = false;
-boolean strobeOn = false;
-///////Reed Switch//////////////
-int circleNum = 0;
-float wheelDiameter = 25.2;
-float wheelC = 3.14 * wheelDiameter;
-float odometer = 0;
-float miles = 0;
-float kilometers = 0;
-float speedometer = 0;
-float MPH = 0;
-float KPH = 0;
-int reedTime = 0;
-int reedTimeDelta = 0;
-boolean reedOn = false;
-boolean metric = true;
-///////Turning Indicator Buttons////////
-boolean rOn = false;
-boolean lOn = false;
-boolean stateChange = false;
-boolean turningOn = false;
-boolean turningLOn = false;
-boolean turningROn = false;
-int right;
-int left;
-int rightOld;
-int leftOld;
-unsigned long millisRight;
-unsigned long millisLeft;
-///////Turning Indicator Matrix///////////
-// use this line for single matrix
-int numMatrices = 1;
-int height = 16;
-int width = numMatrices * 32;
-int numLEDs = height*width;
-int stepSize = 2;
-char pixel;
-HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
-///////LCD//////////////////////
-// initialize the library with the numbers of the interface pins
-int LCDButton;
-int brightness = 0;
-int red = 130;
-int green = 222;
-int blue = 219;
-int counter;
-boolean brightUp;
-//////////Timer Variables/////////////////
-int blinkTime = 1000;
-Timer scrollTimer;
-int scrollTime = 130;
-Timer strobeTimer;
-int strobeTime = 100;
-boolean blinkOn;
 
 
 ///////////////////////////////////////////////////////////////
 //////////////////////////SETUP//////////////////////
 ///////////////////////////////////////////
+
 void setup() {
   delay(500);
   // set up the LCD's number of rows and columns:
@@ -224,6 +235,7 @@ void setup() {
 ///////////////////////////////////////////////////////////////
 ////////////////////////////LOOP/////////////////////
 ///////////////////////////////////////////
+
 void loop() {
   checkBraking();
   checkTurning();
@@ -240,6 +252,7 @@ void loop() {
 ///////////////////////////////////////////////////////////////
 ///////////////////////////CHECK/////////////////////
 ///////////////////////////////////////////
+
 void checkBraking(){
   brakeV = analogRead(brakeVPin);
   if(brakeV < brakeThresh){
@@ -442,6 +455,7 @@ void resetLCD(){
 ///////////////////////////////////////////////////////////////
 ///////////////////////////PRINT/////////////////////
 ///////////////////////////////////////////
+
 void printSpeed(){
   speedometer = wheelC/reedTimeDelta; 
   if(metric){
@@ -606,6 +620,7 @@ void stepDown(){
 ///////////////////////////////////////////////////////////////
 //////////////////////TIMER FUNCTIONS////////////////
 ///////////////////////////////////////////
+
 void scroll(){
   if(brakeOn == false){
     if(rOn){
