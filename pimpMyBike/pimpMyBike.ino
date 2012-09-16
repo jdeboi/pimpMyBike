@@ -24,7 +24,11 @@
 /////Variables to set/////////////////////////
 ///////////////////////////////
 
-float wheelC = 32;
+//set metric = false to use miles
+boolean metric = true;
+//in centimeters 
+float wheelC = 212.5;
+
 
 ////////////////////////////////////
 ///////Pins to set////////////////////////////
@@ -105,7 +109,6 @@ float KPH = 0;
 int reedTime = 0;
 int reedTimeDelta = 0;
 boolean reedOn = false;
-boolean metric = true;
 
 ////Turning Indicator Buttons///
 boolean rOn = false;
