@@ -1,9 +1,10 @@
 ////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////
-//jdeboi
-//September 15, 2012
-//for more information: www.jdeboi.com
-//Feel free to copy, distribute, improve, deconstruct...
+// pimpMyBike ///////////////////////////////////
+// jdeboi
+// September 15, 2012
+// For more information: www.jdeboi.com
+// Feel free to copy, distribute, improve, deconstruct...
+////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////
 ///////Headers/libraries//////////////////////
@@ -33,26 +34,32 @@ float wheelC = 212.5;
 ////////////////////////////////////
 ///////Pins to set////////////////////////////
 ///////////////////////////////
-/*
-Note 1: Change the pin numbers according
-to your individual circuit.
 
-Note 2: For this project, it doesn't matter
-whether you use analog or digital pins, 
-with the exception of the three pins that
-control the brightness of the LCD 
-backlight (must use ~PWM to get analog
-output).
+/*
+Note: Change the pin numbers according
+to your individual circuit. For most pins, 
+it doesn't matter whether you use analog 
+or digital I/O.
 */
 
-//////////Brake/////////////////  
-const int brakeVPin = A0;
-
-////////////LCD/////////////////
-#define REDLITE 5   //red LED in LCD backlight (LCD pin #16)
-#define GREENLITE 6 //green LED in LCD backlight (LCD pin #17)
-#define BLUELITE 9  //blue LED in LCD backlight (LCD pin #18)
-LiquidCrystal lcd(2, 3, 13, 8, 7, 4);
+const int brakeVPin = A0;   //analog input
+const int reedPin = A1;     //any input
+const int turnRPin = A3;    //any input; pin used to sense turning button
+const int turnRLED = A5;    //any output; pin used to turn on button LED
+const int turnLPin = A2;    //any input; pin used to sense turning button
+const int turnLLED = A4;    //any output; pin used to turn on button LED
+const int data = 11;        //any output; LED panel, orange wire
+const int wr = 12;          //any output; LED panel, yellow wire
+const int cs = 10;          //any output; LED panel, white wire
+const int LCD1 = 2;         //any output
+const int LCD2 = 3;         //any output     
+const int LCD3 = 13;        //any output
+const int LCD4 = 8;         //any output
+const int LCD5 = 7;         //any output 
+const int LCD6 = 4;         //any output
+const int redLCD = 5;       //analog out; red LCD backlight; LCD pin #16
+const int greenLCD = 6;     //analog out; LCD pin #17 
+const int blueLCD = 9;      //analog out; LCD pin #18 
 
 /*
 for LCD pin wiring: http://learn.adafruit.com/character-lcds/rgb-backlit-lcds
@@ -72,19 +79,6 @@ LCD# - Arduino#
 16 through 18 are ~PWM pins used for the backlight
 */
 
-//////////LED Panel/////////////
-#define DATA 11 //LED panel; orange wire
-#define WR   12 //LED panel; yello wire
-#define CS   10 //LED panel; white wire
-
-//////Speed/dist pin////////////
-const int reedPin = A1; 
-
-//////Turning Pins//////////////
-const int turnRPin = A3; //pin used to sense turning button
-const int turnRLED = A5; //pin used to turn on button LED
-const int turnLPin = A2; //pin used to sense turning button
-const int turnLLED = A4; //pin used to turn on button LED
 
 ////////////////////////////////////
 ///////Bike Variables/////////////////////////
@@ -132,9 +126,10 @@ int width = numMatrices * 32;
 int numLEDs = height*width;
 int stepSize = 2;
 char pixel;
-HT1632LEDMatrix matrix = HT1632LEDMatrix(DATA, WR, CS);
+HT1632LEDMatrix matrix = HT1632LEDMatrix(data, wr, cs);
 
 ///////LCD//////////////////////
+LiquidCrystal lcd(LCD1, LCD2, LCD3, LCD4, LCD5, LCD6);
 int LCDButton;
 int brightness = 0;
 int red = 130;
@@ -464,9 +459,9 @@ void setBacklight() {
   g = map(g, 0, 255, 255, 0);
   b = map(b, 0, 255, 255, 0);
 
-  analogWrite(REDLITE, r);
-  analogWrite(GREENLITE, g);
-  analogWrite(BLUELITE, b);
+  analogWrite(redLCD, r);
+  analogWrite(greenLCD, g);
+  analogWrite(blueLCD, b);
 }
 
 void backlightOff(){
