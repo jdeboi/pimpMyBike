@@ -66,7 +66,7 @@ for LCD pin wiring: http://learn.adafruit.com/character-lcds/rgb-backlit-lcds
 LCD# - Arduino#
 1 - GND
 2 - 5V
-3 - LCD potentiometer
+3 - LCD potentiometer (not connected to Arduino)
 4 - LCD1 (I used pin D2)
 5 - GND
 6 - LCD2 (I used pin D3)
