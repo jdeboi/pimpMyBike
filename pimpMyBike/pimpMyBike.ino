@@ -67,14 +67,14 @@ LCD# - Arduino#
 1 - GND
 2 - 5V
 3 - LCD potentiometer
-4 - D7 Adafruit code, D2 my sketch
+4 - D7 Adafruit code; LCD1 (pin D2) my sketch
 5 - GND
-6 - D8 Adafruit code, D3 my sketch
+6 - D8 Adafruit code; LCD2 (pin D3) my sketch
 7 through 10 aren't connected to the Arduino
-11 - D9 Adafruit code, D13 my sketch
-12 - D10 Adafruit code, D8 my sketch
-13 - D11 Adafruit code, D7 my sketch
-14 - D12 Adafruit code, D4 my sketch
+11 - D9 Adafruit code; LCD3 (pin D13) my sketch
+12 - D10 Adafruit code; LCD4 (pin D8) my sketch
+13 - D11 Adafruit code; LCD5 (pin D7) my sketch
+14 - D12 Adafruit code; LCD6 (pin D4) my sketch
 15 - 5V
 16 through 18 are ~PWM pins used for the backlight
 */
