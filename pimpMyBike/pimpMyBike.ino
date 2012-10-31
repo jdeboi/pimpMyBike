@@ -51,19 +51,21 @@ const int turnLLED = A4;    //any output; pin used to turn on button LED
 const int data = 11;        //any output; LED panel, orange wire
 const int wr = 12;          //any output; LED panel, yellow wire
 const int cs = 10;          //any output; LED panel, white wire
-const int LCD1 = 2;         //any output
-const int LCD2 = 3;         //any output     
-const int LCD3 = 13;        //any output
-const int LCD4 = 8;         //any output
-const int LCD5 = 7;         //any output 
-const int LCD6 = 4;         //any output
-const int redLCD = 5;       //analog out; red LCD backlight; LCD pin #16
-const int greenLCD = 6;     //analog out; LCD pin #17 
-const int blueLCD = 9;      //analog out; LCD pin #18 
+const int LCD1 = 2;         //any output; LCD pin #4
+const int LCD2 = 3;         //any output; LCD pin #6    
+const int LCD3 = 13;        //any output; LCD pin #11
+const int LCD4 = 8;         //any output; LCD pin #12
+const int LCD5 = 7;         //any output; LCD pin #13 
+const int LCD6 = 4;         //any output; LCD pin #14
+const int redLCD = 5;       //analog out (~PWM pin); LCD pin #16  
+const int greenLCD = 6;     //analog out (~PWM pin); LCD pin #17
+const int blueLCD = 9;      //analog out (~PWM pin); LCD pin #18 
 
 /*
 for LCD pin wiring: http://learn.adafruit.com/character-lcds/rgb-backlit-lcds
+
 LCD# - Arduino#
+-------------------
 1 - GND
 2 - 5V
 3 - LCD potentiometer (not connected to Arduino)
@@ -71,14 +73,16 @@ LCD# - Arduino#
 5 - GND
 6 - LCD2 (I used pin D3)
 7 through 10 aren't connected to the Arduino
-11 - LCD3 (I used pin D13)
-12 - LCD4 (I used pin D8)
-13 - LCD5 (I used pin D7)
-14 - LCD6 (I used pin D4)
+11 - LCD3 
+12 - LCD4 
+13 - LCD5 
+14 - LCD6 
 15 - 5V
 16 - redLCD, ~PWM pin (I used pin D5)
 17 - greenLCD, ~PWM pin (I used pin D6)
 18 - blueLCD, ~PWM pin (I used pin D9)
+
+16 through 18 control the color of the LCD backlight
 */
 
 
