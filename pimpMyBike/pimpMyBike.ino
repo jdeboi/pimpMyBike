@@ -51,12 +51,12 @@ const int turnLLED = A4;    //any output; pin used to turn on button LED
 const int data = 11;        //any output; LED panel, orange wire
 const int wr = 12;          //any output; LED panel, yellow wire
 const int cs = 10;          //any output; LED panel, white wire
-const int LCD1 = 2;         //any output; LCD pin #4
-const int LCD2 = 3;         //any output; LCD pin #6    
-const int LCD3 = 13;        //any output; LCD pin #11
-const int LCD4 = 8;         //any output; LCD pin #12
-const int LCD5 = 7;         //any output; LCD pin #13 
-const int LCD6 = 4;         //any output; LCD pin #14
+const int LCD4 = 2;         //any output; LCD pin #4
+const int LCD6 = 3;         //any output; LCD pin #6    
+const int LCD11 = 13;        //any output; LCD pin #11
+const int LCD12 = 8;         //any output; LCD pin #12
+const int LCD13 = 7;         //any output; LCD pin #13 
+const int LCD14 = 4;         //any output; LCD pin #14
 const int redLCD = 5;       //analog out (~PWM pin); LCD pin #16  
 const int greenLCD = 6;     //analog out (~PWM pin); LCD pin #17
 const int blueLCD = 9;      //analog out (~PWM pin); LCD pin #18 
@@ -69,14 +69,14 @@ LCD# - Arduino#
 1 - GND
 2 - 5V
 3 - LCD potentiometer (not connected to Arduino)
-4 - LCD1 (I used pin D2)
+4 - LCD4 (I used pin D2)
 5 - GND
-6 - LCD2 (I used pin D3)
+6 - LCD6 (I used pin D3)
 7 through 10 aren't connected to the Arduino
-11 - LCD3 
-12 - LCD4 
-13 - LCD5 
-14 - LCD6 
+11 - LCD11 
+12 - LCD12 
+13 - LCD13 
+14 - LCD14 
 15 - 5V
 16 - redLCD, ~PWM pin (I used pin D5)
 17 - greenLCD, ~PWM pin (I used pin D6)
@@ -135,7 +135,7 @@ char pixel;
 HT1632LEDMatrix matrix = HT1632LEDMatrix(data, wr, cs);
 
 ///////LCD//////////////////////
-LiquidCrystal lcd(LCD1, LCD2, LCD3, LCD4, LCD5, LCD6);
+LiquidCrystal lcd(LCD4, LCD6, LCD11, LCD12, LCD13, LCD14);
 int LCDButton;
 int brightness = 0;
 int red = 130;
