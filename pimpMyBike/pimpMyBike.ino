@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <LiquidCrystal.h>
 #include <Wire.h>           
-#include "Timer.h"          //http://www.doctormonk.com/2012/01/arduino-timer-library.html
+#include "Timer.h"          //https://github.com/JChristensen/Timer
 #include "HT1632.h"         //https://github.com/adafruit/HT1632
 
 ///////////////////////////////////////////////////////////////
