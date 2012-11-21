@@ -13,9 +13,9 @@
 #include <avr/pgmspace.h>
 #include <stdlib.h>
 #include <LiquidCrystal.h>
-#include <Wire.h>           
-#include "Timer.h"          //https://github.com/JChristensen/Timer
-#include "HT1632.h"         //https://github.com/adafruit/HT1632
+#include <Wire.h>
+#include "Timer.h"            //https://github.com/JChristensen/Timer
+#include "HT1632.h"           //https://github.com/adafruit/HT1632
 
 ///////////////////////////////////////////////////////////////
 ////////////////////////VARIABLES////////////////////
@@ -69,14 +69,14 @@ LCD# - Arduino#
 1 - GND
 2 - 5V
 3 - LCD potentiometer (not connected to Arduino)
-4 - LCD4 (I used pin D2)
+4 - LCD1 (I used pin D2)
 5 - GND
-6 - LCD6 (I used pin D3)
+6 - LCD2 (I used pin D3)
 7 through 10 aren't connected to the Arduino
-11 - LCD11 
-12 - LCD12 
-13 - LCD13 
-14 - LCD14 
+11 - LCD3 
+12 - LCD4 
+13 - LCD5 
+14 - LCD6 
 15 - 5V
 16 - redLCD, ~PWM pin (I used pin D5)
 17 - greenLCD, ~PWM pin (I used pin D6)
@@ -137,12 +137,13 @@ HT1632LEDMatrix matrix = HT1632LEDMatrix(data, wr, cs);
 ///////LCD//////////////////////
 LiquidCrystal lcd(LCD4, LCD6, LCD11, LCD12, LCD13, LCD14);
 int LCDButton;
-int brightness = 0;
+int brightness = 50;
 int red = 130;
 int green = 222;
 int blue = 219;
 int counter;
 boolean brightUp;
+boolean backlightOn; 
 
 //////////Timer Variables///////
 int blinkTime = 1000;
@@ -262,7 +263,7 @@ void setup() {
   scrollTimer.every(scrollTime, scroll);
   strobeTimer.every(strobeTime, strobe);
   lcd.begin(16, 2);
-  setBacklight();
+  backlightOff();
 
   matrix.begin(HT1632_COMMON_16NMOS); 
   delay(500);
@@ -343,15 +344,22 @@ void checkTurning(){
   }
   else if(right == HIGH && rightOld == HIGH){
     int deltaTime = millis() - millisRight;
-    if(deltaTime > 600 && deltaTime < 700){
-      backlightOff();  
+    if(deltaTime > 1000 && !backlightOn){
+      setLCDColor();  
     }
-    else if (deltaTime >= 700) {
-      setLCDColor(); 
+    else if (deltaTime > 1000) {
+       backlightOff();
     }
   }
+   else if(right == LOW && rightOld == HIGH){
+    int deltaTime = millis() - millisRight;
+    if(deltaTime > 1000){
+      backlightOn =! backlightOn;
+      delay(30);
+    }  
+  }
   else if(left == HIGH && leftOld == HIGH){
-    if(millis() - millisLeft > 500){
+    if(millis() - millisLeft > 1000){
       resetLCD();
     }
   }
@@ -455,10 +463,11 @@ void setBacklight() {
 
   r = map(r, 0, 255, 0, 100);
   g = map(g, 0, 255, 0, 150);
-
+ 
   r = map(r, 0, 255, 0, brightness);
   g = map(g, 0, 255, 0, brightness);
   b = map(b, 0, 255, 0, brightness);
+
 
   // common anode so invert!
   r = map(r, 0, 255, 255, 0);
@@ -471,8 +480,10 @@ void setBacklight() {
 }
 
 void backlightOff(){
-  brightness = 0;
-  setBacklight();
+  //common annode, so invert (?) 255 and 0
+  analogWrite(redLCD, 255);
+  analogWrite(greenLCD, 255);
+  analogWrite(blueLCD, 255);
 }
 
 void setLCDColor(){
@@ -501,7 +512,7 @@ void setLCDColor(){
 
 void resetLCD(){
   circleNum = 0;
-  brightness = 0;
+  backlightOff();
 }
 
 ///////////////////////////////////////////////////////////////
@@ -707,5 +718,3 @@ void debugBrake(){
   lcd.setCursor(1, 0); 
   lcd.print(br);
 }
-
-
