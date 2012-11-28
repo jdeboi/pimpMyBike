@@ -687,11 +687,9 @@ void stepDown(){
 void scroll(){
   if(brakeOn == false){
     if(rOn){
-      //matrix.translate(stepSize, 0);
       translate(0, -1);
     }
     else if(lOn){
-      //matrix.translate(-1*stepSize, 0);
       translate(0, 1);
     }
   }
