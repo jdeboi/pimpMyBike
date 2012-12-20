@@ -27,7 +27,7 @@
 
 //set metric = false to use miles
 boolean metric = true;
-//in centimeters 
+//wheel circumference in centimeters 
 float wheelC = 212.5;
 
 
