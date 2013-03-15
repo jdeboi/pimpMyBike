@@ -18,6 +18,8 @@ All of the shapes are stored in linked lists.  At some point, it'd be nice
 to write functions to animate individual shape objects.
 */
 
+include java.util.*;
+
 //////////modify these variables///////////
 int numMatrices = 1;
 //set this variable equal to false to make the matrix vertical
