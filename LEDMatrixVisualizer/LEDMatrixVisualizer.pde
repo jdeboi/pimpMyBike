@@ -18,7 +18,7 @@ All of the shapes are stored in linked lists.  At some point, it'd be nice
 to write functions to animate individual shape objects.
 */
 
-include java.util.*;
+import java.util.*;
 
 //////////modify these variables///////////
 int numMatrices = 1;
