@@ -171,7 +171,7 @@ ints or chars
 */
 
 //right turning indicator LED pattern
-prog_uchar rightBytes[48] PROGMEM  = {
+const unsigned char rightBytes[48] PROGMEM  = {
   28, 0, 56, 
   14, 0, 112, 
   7, 0, 224, 
@@ -191,7 +191,7 @@ prog_uchar rightBytes[48] PROGMEM  = {
 };
 
 //left turning indicator LED pattern
-prog_uchar leftBytes [48] PROGMEM = {
+const unsigned char leftBytes [48] PROGMEM = {
   0, 24, 0, 
   0, 60, 0, 
   0, 126, 0, 
@@ -211,7 +211,7 @@ prog_uchar leftBytes [48] PROGMEM = {
 };
 
 //brake and night-taillight LED pattern
-prog_uchar brakeBytes [48] PROGMEM = {
+const unsigned char brakeBytes [48] PROGMEM = {
   0, 24, 0, 
   0, 60, 0, 
   0, 126, 0, 
